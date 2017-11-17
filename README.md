@@ -3,10 +3,16 @@ Fiji-Plugin to segment and quantify confocal images
 
 # Manual
 ## Install Plugin in Fiji
-Either download this whole repository as a .zip-file or save directly the Cluster_Analysis.zip-file and unzip it locally. In Fiji go to Plugins > Install PlugIn... and choose the whole, unzipped Cluster_Analysis-folder containing three files (Cluster_Analysis.py, plugins.config and sqlite-jdbc-3.21.0.jar). You can also manually place the whole folder into the right place inside Fiji.
+Either download this whole repository as a .zip-file or save directly the Cluster_Analysis.zip-file and unzip it locally. There are two ways on how to install the Plugin:
+
+- In Fiji go to Plugins > Install PlugIn... and choose the whole, unzipped Cluster_Analysis-folder containing three files (Cluster_Analysis.py, plugins.config and sqlite-jdbc-3.21.0.jar). 
+- Install first Cluster_Analysis.py and then repeat with sqlite-jdbc-3.21.0.jar. 
+- Restart Fiji.
+
+Alternatively, if you know where you installed the Fiji-application, you can also manually place the whole folder into the right place inside Fiji.
 
 - In Windows: open the Fiji.app-folder and place the Cluster_Analysis-folder inside Fiji.app/plugins.
-- In Mac: right click on the Fiji-icon and choose "Show Package Content". Then place the whole folder inside the /plugins-folder.
+- In Mac: right click on the Fiji-icon and choose "Show Package Content". Then place the whole folder inside the /plugins folder.
 
 After the successful installation you should restart Fiji and find the plugin under PlugIns > Cluster Analysis.
 
