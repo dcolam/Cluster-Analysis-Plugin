@@ -6,6 +6,7 @@ import sys, time, os, traceback, random, time, ConfigParser
 from ij import IJ, ImagePlus, WindowManager
 from org.sqlite import SQLiteConfig
 from java.lang import Class
+from loci.plugins.util import WindowTools as wt
 from java.sql import DriverManager, SQLException, Types, Statement
 from ij.gui import GenericDialog, WaitForUserDialog, Roi
 from ij.process import ImageProcessor, AutoThresholder
@@ -935,6 +936,7 @@ class Dialoger(object):
 
         self.filenames = filenames
 
+
     def getOptions(self):
         section = "ChannelOptions"
         expath = cp.cp.get(section, "expath")
@@ -1006,9 +1008,13 @@ class Dialoger(object):
         gd.addNumericField("Gaussian Blur (0 if not, otherwise state the radius)", sigmaC4, 0)  # sigmaC4 = 0
         gd.addMessage("_________________________________________________________________________________")
         gd.addCheckbox("Test parameters on random pictures?", testBool)  # testBool = True
-
+        wt.addScrollBars(gd)
+        print gd.getPreferredSize(), gd.getSize()
+        
         gd.showDialog()
-
+        print gd.getPreferredSize(), gd.getSize()
+        
+        print gd.getPreferredSize(), gd.getSize()
         if gd.wasCanceled():
             print "User canceled dialog!"
             return
@@ -1605,7 +1611,7 @@ IJ.run("Close All", "")
 IJ.redirectErrorMessages(True)
 memory = gc()
 print "Current Memory", memory
-IJ.run("Monitor Memory...", "")
+IJ.run("Monitor Memory...")
 IJ.run("Console")
 IJ.setDebugMode(False)
 IJ.resetEscape()
