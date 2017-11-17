@@ -3,7 +3,7 @@ Fiji-Plugin to segment and quantify confocal images
 
 # Manual
 ## Install Plugin in Fiji
-Either download this whole repository as a .zip-file or go directly to Cluster_Analysis.zip and unzip it locally. In Fiji go to Plugins > Install PlugIn... and choose the unzipped Cluster_Analysis-folder. After the successful installation you should restart Fiji and find the plugin under Cluster Analysis.
+Either download this whole repository as a .zip-file or save directly the Cluster_Analysis.zip-file and unzip it locally. In Fiji go to Plugins > Install PlugIn... and choose the unzipped Cluster_Analysis-folder. After the successful installation you should restart Fiji and find the plugin under PlugIns > Cluster Analysis.
 
 ## Prerequisites
 Only thing one should follow, is the right organisation of the folder where you keep the images to be analyzed. In particular the titles should all have the same structure, meaning all useful information should be separated by an underscore and all images should have the same number of information (XX_YY_ZZ.tif for example, another title should accordingly look something like this AA_BB_CC.tif).
