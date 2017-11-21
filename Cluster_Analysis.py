@@ -16,13 +16,18 @@ from ij.plugin.filter import EDM
 from loci.plugins import BF
 
 if len(sys.argv) > 1:
-	if sys.argv[1] == "h":
-		print "Headless mode"
-		headless = True
+    if sys.argv[1] == "h":
+        print "Headless mode"
+        headless = True
+
+    if os.path.isdir(sys.argv[2]):
+        expath2 = sys.argv[2]
 else:
-	headless = False
-	
+    headless = False
+
+
 class config(object):
+
     def __init__(self):
         self.cp = ConfigParser.ConfigParser()
         self.cp.optionxform = str
@@ -188,23 +193,26 @@ class db_interface(object):
     def describeFilename(self, image_name):
         # filename = image.name
         descriptions = image_name.split("_")
-        gd = GenericDialog("Describe the random filename %s as seen in the result-database" % image_name)
-        gd.addMessage("To leave out an option, don't type anything in the corresponding field")
-
-        #l = ["InternalID", "Timepoint", "Gene", "Region", "", "", "", "", "", "", "", "", "", "", ""]
         l = eval(cp.cp.get("DB_Interface", "l"))
 
-        for i, x in enumerate(descriptions):
-            gd.addStringField(x, l[i], 10)
+        if not headless:
+            gd = GenericDialog("Describe the random filename %s as seen in the result-database" % image_name)
+            gd.addMessage("To leave out an option, don't type anything in the corresponding field")
 
-        gd.showDialog()
-        if gd.wasCanceled():
-            print "User canceled dialog!"
-            return
+            #l = ["InternalID", "Timepoint", "Gene", "Region", "", "", "", "", "", "", "", "", "", "", ""]
 
-        self.raw_descriptor = [gd.getNextString() for i in range(0, len(descriptions))]
+            for i, x in enumerate(descriptions):
+                gd.addStringField(x, l[i], 10)
 
-        cp.update("DB_Interface", {"l": str(self.raw_descriptor)})
+            gd.showDialog()
+            if gd.wasCanceled():
+                print "User canceled dialog!"
+                return
+
+            self.raw_descriptor = [gd.getNextString() for i in range(0, len(descriptions))]
+            cp.update("DB_Interface", {"l": str(self.raw_descriptor)})
+        else:
+            self.raw_descriptor = l
 
 
         self.descriptor_PA += [x for x in self.raw_descriptor if x] + ["Channel_Name", "Selection", "Selection_Area",
@@ -523,23 +531,28 @@ class SelectionManager(object):
         manSel = cp.cp.getfloat(section, "manSel")
         autSel = cp.cp.getfloat(section, "autSel")
 
-        gd = GenericDialog("Selection Manager")
-        gd.addNumericField("How many manual selections?", manSel, 0)  # manSel = 0
-        gd.addNumericField("How many automatic selection?", autSel, 0)  # autSel = 1
-        gd.showDialog()
+        if not headless:
+            gd = GenericDialog("Selection Manager")
+            gd.addNumericField("How many manual selections?", manSel, 0)  # manSel = 0
+            gd.addNumericField("How many automatic selection?", autSel, 0)  # autSel = 1
+            gd.showDialog()
 
-        if gd.wasCanceled():
-            print "User canceled dialog!"
-            return
+            if gd.wasCanceled():
+                print "User canceled dialog!"
+                return
 
-        self.nManSelections = int(gd.getNextNumber())
-        self.nAutoSelections = int(gd.getNextNumber())
+            self.nManSelections = int(gd.getNextNumber())
+            self.nAutoSelections = int(gd.getNextNumber())
 
-        manSel = self.nManSelections
-        autSel = self.nAutoSelections
-        l = ["manSel", "autSel"]
-        n = [manSel, autSel]
-        cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
+            manSel = self.nManSelections
+            autSel = self.nAutoSelections
+            l = ["manSel", "autSel"]
+            n = [manSel, autSel]
+            cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
+        else:
+            self.nManSelections = manSel
+            self.nAutoSelections = autSel
+
 
 
 class Selection(object):
@@ -629,24 +642,28 @@ class Selection(object):
         SelName = cp.cp.get(section, "SelName")
         SaveRoi = cp.cp.getboolean(section, "SaveRoi")
 
-        gd = GenericDialog("Options for %s selection %s" % (self.typeSel, self.ID))
-        gd.addStringField("Selection Name: ", SelName, 20)  # SelName = 'Selection2'
-        gd.addCheckbox("Save ROI?", SaveRoi)  # SaveRoi = True
+        if not headless:
+            gd = GenericDialog("Options for %s selection %s" % (self.typeSel, self.ID))
+            gd.addStringField("Selection Name: ", SelName, 20)  # SelName = 'Selection2'
+            gd.addCheckbox("Save ROI?", SaveRoi)  # SaveRoi = True
 
-        # if self.typeSel == "automatic":
+            # if self.typeSel == "automatic":
 
-        gd.showDialog()
+            gd.showDialog()
 
-        if gd.wasCanceled():
-            print "User canceled dialog!"
-            return
+            if gd.wasCanceled():
+                print "User canceled dialog!"
+                return
 
-        self.name = SelName = gd.getNextString()
-        self.saveRoi = SaveRoi = gd.getNextBoolean()
+            self.name = SelName = gd.getNextString()
+            self.saveRoi = SaveRoi = gd.getNextBoolean()
 
-        l = ["SelName", "SaveRoi"]
-        n = [SelName, SaveRoi]
-        cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
+            l = ["SelName", "SaveRoi"]
+            n = [SelName, SaveRoi]
+            cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
+        else:
+            self.name = SelName
+            self.saveRoi = SaveRoi
 
     def selectAreaManually(self):
         if not self.show:
@@ -680,67 +697,86 @@ class Selection(object):
         enlarge1 = cp.cp.getfloat(section, "enlarge1")
         # testBool = cp.cp.getboolean(section, "testBool")
 
-        gd = GenericDialog("Options to build an automatic selection for all images")
-        gd.addStringField("Selection name: ", SelName2, 20)  # SelName2 = 'Selection1'
-        gd.addCheckbox("Save ROI?", SaveRoi2)  # SaveRoi2 = True
-        gd.addMessage("_________________________________________________________________________________")
-        gd.addMessage("Choose a channel (or more) to create the combined mask")
-        gd.addCheckboxGroup(1, 4, ["Mask from C1: ", "Mask from C2: ", "Mask from C3: ", "Mask from C4: "],
-                            maskBool_list)  # maskBool_list = [True, True, False, True]
-        gd.addNumericField("Incremental option for dendritic segment analysis (type how many increments, 0 if not): ",
-                           nOfIncrements, 0)  # nOfIncrements = 4
-        gd.addNumericField("Incremental Option in um (0 if not): ", incrementslengths, 0)  # incrementslengths = 50
-        gd.addCheckbox("Add an inverse selection of this mask?", inverseBool)  # inverseBool = True
-        gd.addMessage("_________________________________________________________________________________")
-        gd.addNumericField("Background radius:", backgroundRadius, 0)  # backgroundRadius = 50
-        gd.addNumericField("Sigma of Gaussian Blur (0 if not, otherwise state the radius)", sigma1, 2)  # sigma1 = 5
-        gd.addChoice("Binary Threshold Method", self.allMethods, binMethod1)  # binMethod1 =  Huang
-        gd.addCheckbox("Select a certain size and roundness range for the selection?", selectSizeBool)  # selectSizeBool = True
-        gd.addNumericField("Lower Particle Size:", sizeA1, 0)  # sizeA1 = 1000
-        gd.addNumericField("Higher Particle Size:", sizeB2, 0)  # sizeB2 = 200000
-        gd.addNumericField("Circularity bottom:", circA1, 1)  # circA1 = 0.0
+        if not headless:
+            gd = GenericDialog("Options to build an automatic selection for all images")
+            gd.addStringField("Selection name: ", SelName2, 20)  # SelName2 = 'Selection1'
+            gd.addCheckbox("Save ROI?", SaveRoi2)  # SaveRoi2 = True
+            gd.addMessage("_________________________________________________________________________________")
+            gd.addMessage("Choose a channel (or more) to create the combined mask")
+            gd.addCheckboxGroup(1, 4, ["Mask from C1: ", "Mask from C2: ", "Mask from C3: ", "Mask from C4: "],
+                                maskBool_list)  # maskBool_list = [True, True, False, True]
+            gd.addNumericField("Incremental option for dendritic segment analysis (type how many increments, 0 if not): ",
+                               nOfIncrements, 0)  # nOfIncrements = 4
+            gd.addNumericField("Incremental Option in um (0 if not): ", incrementslengths, 0)  # incrementslengths = 50
+            gd.addCheckbox("Add an inverse selection of this mask?", inverseBool)  # inverseBool = True
+            gd.addMessage("_________________________________________________________________________________")
+            gd.addNumericField("Background radius:", backgroundRadius, 0)  # backgroundRadius = 50
+            gd.addNumericField("Sigma of Gaussian Blur (0 if not, otherwise state the radius)", sigma1, 2)  # sigma1 = 5
+            gd.addChoice("Binary Threshold Method", self.allMethods, binMethod1)  # binMethod1 =  Huang
+            gd.addCheckbox("Select a certain size and roundness range for the selection?", selectSizeBool)  # selectSizeBool = True
+            gd.addNumericField("Lower Particle Size:", sizeA1, 0)  # sizeA1 = 1000
+            gd.addNumericField("Higher Particle Size:", sizeB2, 0)  # sizeB2 = 200000
+            gd.addNumericField("Circularity bottom:", circA1, 1)  # circA1 = 0.0
 
-        gd.addNumericField("Circularity top:", circB2, 1)  # circB2 = 0.5
+            gd.addNumericField("Circularity top:", circB2, 1)  # circB2 = 0.5
 
-        gd.addNumericField("Enlarge mask in [um]? (For shrinkage put negative numbers)", enlarge1, 2)  # enlarge1 = 3.5
-        # gd.addMessage("_________________________________________________________________________________")
-        # gd.addCheckbox("Test parameters on random pictures?", testBool) #testBool = True
+            gd.addNumericField("Enlarge mask in [um]? (For shrinkage put negative numbers)", enlarge1, 2)  # enlarge1 = 3.5
+            # gd.addMessage("_________________________________________________________________________________")
+            # gd.addCheckbox("Test parameters on random pictures?", testBool) #testBool = True
 
-        gd.showDialog()
-        if gd.wasCanceled():
-            print "User canceled dialog!"
-            return
+            gd.showDialog()
+            if gd.wasCanceled():
+                print "User canceled dialog!"
+                return
 
-        self.name = SelName2 = gd.getNextString()
-        self.saveRoi = SaveRoi2 = gd.getNextBoolean()
-        c1 = gd.getNextBoolean()
-        c2 = gd.getNextBoolean()
-        c3 = gd.getNextBoolean()
-        c4 = gd.getNextBoolean()
-        self.channels = maskBool_list = [c1, c2, c3, c4]
-        self.nIncrements = nOfIncrements = int(gd.getNextNumber())
-        self.increment = incrementslengths = gd.getNextNumber()
-        self.inverse = inverseBool = gd.getNextBoolean()
-        self.background = backgroundRadius = gd.getNextNumber()
-        self.sigma = sigma1 = gd.getNextNumber()
-        self.method = binMethod1 = gd.getNextChoice()
-        self.pa = selectSizeBool = gd.getNextBoolean()
-        self.sizea = sizeA1 = gd.getNextNumber()
-        self.sizeb = sizeB2 = gd.getNextNumber()
-        self.circa = circA1 = gd.getNextNumber()
-        self.circb = circB2 = gd.getNextNumber()
-        self.enlarge = enlarge1 = gd.getNextNumber()
-        # self.test= testBool = gd.getNextBoolean()
+            self.name = SelName2 = gd.getNextString()
+            self.saveRoi = SaveRoi2 = gd.getNextBoolean()
+            c1 = gd.getNextBoolean()
+            c2 = gd.getNextBoolean()
+            c3 = gd.getNextBoolean()
+            c4 = gd.getNextBoolean()
+            self.channels = maskBool_list = [c1, c2, c3, c4]
+            self.nIncrements = nOfIncrements = int(gd.getNextNumber())
+            self.increment = incrementslengths = gd.getNextNumber()
+            self.inverse = inverseBool = gd.getNextBoolean()
+            self.background = backgroundRadius = gd.getNextNumber()
+            self.sigma = sigma1 = gd.getNextNumber()
+            self.method = binMethod1 = gd.getNextChoice()
+            self.pa = selectSizeBool = gd.getNextBoolean()
+            self.sizea = sizeA1 = gd.getNextNumber()
+            self.sizeb = sizeB2 = gd.getNextNumber()
+            self.circa = circA1 = gd.getNextNumber()
+            self.circb = circB2 = gd.getNextNumber()
+            self.enlarge = enlarge1 = gd.getNextNumber()
+            # self.test= testBool = gd.getNextBoolean()
 
-        l = ["SelName2", "SaveRoi2", "maskBool_list", "nOfIncrements", "incrementslengths", "inverseBool",
-             "backgroundRadius", "sigma1", "binMethod1", "selectSizeBool", "sizeA1", "sizeB2",
-             "circA1", "circB2", "enlarge1"]  # , "testBool"]
+            l = ["SelName2", "SaveRoi2", "maskBool_list", "nOfIncrements", "incrementslengths", "inverseBool",
+                 "backgroundRadius", "sigma1", "binMethod1", "selectSizeBool", "sizeA1", "sizeB2",
+                 "circA1", "circB2", "enlarge1"]  # , "testBool"]
 
-        n = [SelName2, SaveRoi2, maskBool_list, nOfIncrements, incrementslengths, inverseBool, backgroundRadius, sigma1,
-             binMethod1, selectSizeBool, sizeA1, sizeB2,
-             circA1, circB2, enlarge1]  # , testBool]
+            n = [SelName2, SaveRoi2, maskBool_list, nOfIncrements, incrementslengths, inverseBool, backgroundRadius, sigma1,
+                 binMethod1, selectSizeBool, sizeA1, sizeB2,
+                 circA1, circB2, enlarge1]  # , testBool]
 
-        cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
+            cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
+
+        else:
+            self.name = SelName2
+            self.saveRoi = SaveRoi2
+            self.channels = maskBool_list
+            self.nIncrements = nOfIncrements
+            self.increment = incrementslengths
+            self.inverse = inverseBool
+            self.background = backgroundRadius
+            self.sigma = sigma1
+            self.method = binMethod1
+            self.pa = selectSizeBool
+            self.sizea = sizeA1
+            self.sizeb = sizeB2
+            self.circa = circA1
+            self.circb = circB2
+            self.enlarge = enlarge1
+
 
     def getSelection(self):
         rm = RoiManager.getInstance()
@@ -970,125 +1006,184 @@ class Dialoger(object):
         sigmaC4 = cp.cp.getfloat(section, "sigmaC4")
         testBool = cp.cp.getboolean(section, "testBool")
 
-        gd = GenericDialog("Options")
-        gd.addStringField("Input Folder", expath,
-                          75)  # expPath = "/Users/david/Documents/Home/Studium/Master/Stainings/RS_IF_030717/Syt1"
-        gd.addCheckboxGroup(1, 2, ["Z-project?", "Overwrite old database if it already exists?"],
-                            [zStackBool, True]) # zStackBool = True
-        gd.addStringField("File extension", ext, 10)
-        gd.addMessage(
-            "__________________________________________________________________________________________________________________________________________________")
-        gd.addMessage("Set details for Channel 1")
-        gd.addStringField("Channel 1", c1Name, 8)  # c1Name = "DAPI"
-        gd.addCheckboxGroup(1, 4, ["Background Substraction", "Adjust Brightness/Contrast automatically?",
-                                   "Adjust Brightness/Contrast manually?", "Particle Analysis"],
-                            c1Opt_boolList)  # c1Opt_boolList = [True, False, False, True]
-        gd.addNumericField("Background radius:", backgroundRadc1, 0)  # backgroundRadc1 = 200
-        gd.addNumericField("Gaussian Blur (0 if not, otherwise state the radius)", sigmaC1, 0)  # sigmaC1 = 5
-        gd.addMessage(
-            "__________________________________________________________________________________________________________________________________________________")
-        gd.addMessage("Set details for Channel 2")
-        gd.addStringField("Channel 2", c2Name, 8)  # c2Name =  Cy3-mRNA"
-        gd.addCheckboxGroup(1, 4, ["Background Substraction", "Adjust Brightness/Contrast automatically?",
-                                   "Adjust Brightness/Contrast manually?", "Particle Analysis"],
-                            c2Opt_boolList)  # c2Opt_boolList = [True, False, False, False]
-        gd.addNumericField("Background radius:", backgroundRadc2, 0)  # backgroundRadc2 = 50
-        gd.addNumericField("Gaussian Blur (0 if not, otherwise state the radius)", sigmaC2, 0)  # sigmaC2 = 0
-        gd.addMessage(
-            "__________________________________________________________________________________________________________________________________________________")
-        gd.addMessage("Set details for Channel 3")
-        gd.addStringField("Channel 3", c3Name, 8)  # c3Name = "A488-Morphology"
-        gd.addCheckboxGroup(1, 4, ["Background Substraction", "Adjust Brightness/Contrast automatically?",
-                                   "Adjust Brightness/Contrast manually?", "Particle Analysis"],
-                            c3Opt_boolList)  # c3Opt_boolList = [False, False, False, False]
-        gd.addNumericField("Background radius:", backgroundRadc3, 0)  # backgroundRadc3 = 50
-        gd.addNumericField("Gaussian Blur (0 if not, otherwise state the radius)", sigmaC3, 0)  # sigmaC3 = 0
-        gd.addMessage(
-            "__________________________________________________________________________________________________________________________________________________")
-        gd.addMessage("Set details for Channel 4")
-        gd.addStringField("Channel 4", c4Name, 8)  # c3Name ="Cy5-Arc"
-        gd.addCheckboxGroup(1, 4, ["Background Substraction", "Adjust Brightness/Contrast automatically?",
-                                   "Adjust Brightness/Contrast manually?", "Particle Analysis"],
-                            c4Opt_boolList)  # c4Opt_boolList = [True, False, False, False]
-        gd.addNumericField("Background radius:", 50, 0)  # backgroundRadc4 = 50
-        gd.addNumericField("Gaussian Blur (0 if not, otherwise state the radius)", sigmaC4, 0)  # sigmaC4 = 0
-        gd.addMessage("_________________________________________________________________________________")
-        gd.addCheckbox("Test parameters on random pictures?", testBool)  # testBool = True
-        wt.addScrollBars(gd)
-        print gd.getPreferredSize(), gd.getSize()
-        
-        gd.showDialog()
-        print gd.getPreferredSize(), gd.getSize()
-        
-        print gd.getPreferredSize(), gd.getSize()
-        if gd.wasCanceled():
-            print "User canceled dialog!"
-            return
+        if not headless:
+            gd = GenericDialog("Options")
+            gd.addStringField("Input Folder", expath,
+                              75)  # expPath = "/Users/david/Documents/Home/Studium/Master/Stainings/RS_IF_030717/Syt1"
+            gd.addCheckboxGroup(1, 2, ["Z-project?", "Overwrite old database if it already exists?"],
+                                [zStackBool, True]) # zStackBool = True
+            gd.addStringField("File extension", ext, 10)
+            gd.addMessage(
+                "__________________________________________________________________________________________________________________________________________________")
+            gd.addMessage("Set details for Channel 1")
+            gd.addStringField("Channel 1", c1Name, 8)  # c1Name = "DAPI"
+            gd.addCheckboxGroup(1, 4, ["Background Substraction", "Adjust Brightness/Contrast automatically?",
+                                       "Adjust Brightness/Contrast manually?", "Particle Analysis"],
+                                c1Opt_boolList)  # c1Opt_boolList = [True, False, False, True]
+            gd.addNumericField("Background radius:", backgroundRadc1, 0)  # backgroundRadc1 = 200
+            gd.addNumericField("Gaussian Blur (0 if not, otherwise state the radius)", sigmaC1, 0)  # sigmaC1 = 5
+            gd.addMessage(
+                "__________________________________________________________________________________________________________________________________________________")
+            gd.addMessage("Set details for Channel 2")
+            gd.addStringField("Channel 2", c2Name, 8)  # c2Name =  Cy3-mRNA"
+            gd.addCheckboxGroup(1, 4, ["Background Substraction", "Adjust Brightness/Contrast automatically?",
+                                       "Adjust Brightness/Contrast manually?", "Particle Analysis"],
+                                c2Opt_boolList)  # c2Opt_boolList = [True, False, False, False]
+            gd.addNumericField("Background radius:", backgroundRadc2, 0)  # backgroundRadc2 = 50
+            gd.addNumericField("Gaussian Blur (0 if not, otherwise state the radius)", sigmaC2, 0)  # sigmaC2 = 0
+            gd.addMessage(
+                "__________________________________________________________________________________________________________________________________________________")
+            gd.addMessage("Set details for Channel 3")
+            gd.addStringField("Channel 3", c3Name, 8)  # c3Name = "A488-Morphology"
+            gd.addCheckboxGroup(1, 4, ["Background Substraction", "Adjust Brightness/Contrast automatically?",
+                                       "Adjust Brightness/Contrast manually?", "Particle Analysis"],
+                                c3Opt_boolList)  # c3Opt_boolList = [False, False, False, False]
+            gd.addNumericField("Background radius:", backgroundRadc3, 0)  # backgroundRadc3 = 50
+            gd.addNumericField("Gaussian Blur (0 if not, otherwise state the radius)", sigmaC3, 0)  # sigmaC3 = 0
+            gd.addMessage(
+                "__________________________________________________________________________________________________________________________________________________")
+            gd.addMessage("Set details for Channel 4")
+            gd.addStringField("Channel 4", c4Name, 8)  # c3Name ="Cy5-Arc"
+            gd.addCheckboxGroup(1, 4, ["Background Substraction", "Adjust Brightness/Contrast automatically?",
+                                       "Adjust Brightness/Contrast manually?", "Particle Analysis"],
+                                c4Opt_boolList)  # c4Opt_boolList = [True, False, False, False]
+            gd.addNumericField("Background radius:", 50, 0)  # backgroundRadc4 = 50
+            gd.addNumericField("Gaussian Blur (0 if not, otherwise state the radius)", sigmaC4, 0)  # sigmaC4 = 0
+            gd.addMessage("_________________________________________________________________________________")
+            gd.addCheckbox("Test parameters on random pictures?", testBool)  # testBool = True
+            wt.addScrollBars(gd)
+            print gd.getPreferredSize(), gd.getSize()
 
-        input_path_dir = expath = gd.getNextString()
-        zStack = zStackBool = gd.getNextBoolean()
-        ext = gd.getNextString()
-        self.overwriteDB = gd.getNextBoolean()
+            gd.showDialog()
+            print gd.getPreferredSize(), gd.getSize()
 
-        info_channels = []
-        for i in range(0, 4):
-            channelName = gd.getNextString()
-            background = gd.getNextBoolean()
-            brightness_auto = gd.getNextBoolean()
-            brightness_man = gd.getNextBoolean()
-            pa = gd.getNextBoolean()
-            radius = gd.getNextNumber()
-            gaussian = gd.getNextNumber()
+            print gd.getPreferredSize(), gd.getSize()
+            if gd.wasCanceled():
+                print "User canceled dialog!"
+                return
 
-            if brightness_auto:
-                brightness_man = False
+            input_path_dir = expath = gd.getNextString()
+            zStack = zStackBool = gd.getNextBoolean()
+            ext = gd.getNextString()
+            self.overwriteDB = gd.getNextBoolean()
 
-            if i == 0:
-                c1Name = channelName
-                c1Opt_boolList = [background, brightness_auto, brightness_man, pa]
-                backgroundRadc1 = radius
-                sigmaC1 = gaussian
-            if i == 1:
-                c2Name = channelName
-                c2Opt_boolList = [background, brightness_auto, brightness_man, pa]
-                backgroundRadc2 = radius
-                sigmaC2 = gaussian
-            if i == 2:
-                c3Name = channelName
-                c3Opt_boolList = [background, brightness_auto, brightness_man, pa]
-                backgroundRadc3 = radius
-                sigmaC3 = gaussian
-            if i == 3:
-                c4Name = channelName
-                c4Opt_boolList = [background, brightness_auto, brightness_man, pa]
-                backgroundRadc4 = radius
-                sigmaC4 = gaussian
+            info_channels = []
+            for i in range(0, 4):
+                channelName = gd.getNextString()
+                background = gd.getNextBoolean()
+                brightness_auto = gd.getNextBoolean()
+                brightness_man = gd.getNextBoolean()
+                pa = gd.getNextBoolean()
+                radius = gd.getNextNumber()
+                gaussian = gd.getNextNumber()
 
-            info_channels.append([channelName, background, radius, brightness_auto, brightness_man, pa, gaussian])
-            self.channels[i].setInfo(channel_name=channelName, background_substraction=background,
-                                     background_radius=radius, brightness_auto=brightness_auto,
-                                     brightness_man=brightness_man, pa=pa, gaussian_blur=gaussian)
+                if brightness_auto:
+                    brightness_man = False
 
-        self.test = testBool = gd.getNextBoolean()
+                if i == 0:
+                    c1Name = channelName
+                    c1Opt_boolList = [background, brightness_auto, brightness_man, pa]
+                    backgroundRadc1 = radius
+                    sigmaC1 = gaussian
+                if i == 1:
+                    c2Name = channelName
+                    c2Opt_boolList = [background, brightness_auto, brightness_man, pa]
+                    backgroundRadc2 = radius
+                    sigmaC2 = gaussian
+                if i == 2:
+                    c3Name = channelName
+                    c3Opt_boolList = [background, brightness_auto, brightness_man, pa]
+                    backgroundRadc3 = radius
+                    sigmaC3 = gaussian
+                if i == 3:
+                    c4Name = channelName
+                    c4Opt_boolList = [background, brightness_auto, brightness_man, pa]
+                    backgroundRadc4 = radius
+                    sigmaC4 = gaussian
 
-        l = ["expath", "ext", "zStackBool", "c1Name", "c1Opt_boolList", "backgroundRadc1", "sigmaC1", "c2Name",
-             "c2Opt_boolList",
-             "backgroundRadc2", "sigmaC2", "c3Name", "c3Opt_boolList",
-             "backgroundRadc3", "sigmaC3", "c4Name", "c4Opt_boolList",
-             "backgroundRadc4", "sigmaC4", "testBool"]
+                info_channels.append([channelName, background, radius, brightness_auto, brightness_man, pa, gaussian])
+                self.channels[i].setInfo(channel_name=channelName, background_substraction=background,
+                                         background_radius=radius, brightness_auto=brightness_auto,
+                                         brightness_man=brightness_man, pa=pa, gaussian_blur=gaussian)
 
-        n = [expath, ext, zStackBool, c1Name, c1Opt_boolList, backgroundRadc1, sigmaC1, c2Name, c2Opt_boolList,
-             backgroundRadc2, sigmaC2, c3Name, c3Opt_boolList,
-             backgroundRadc3, sigmaC3, c4Name, c4Opt_boolList,
-             backgroundRadc4, sigmaC4, testBool]
+            self.test = testBool = gd.getNextBoolean()
 
-        cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
+            l = ["expath", "ext", "zStackBool", "c1Name", "c1Opt_boolList", "backgroundRadc1", "sigmaC1", "c2Name",
+                 "c2Opt_boolList",
+                 "backgroundRadc2", "sigmaC2", "c3Name", "c3Opt_boolList",
+                 "backgroundRadc3", "sigmaC3", "c4Name", "c4Opt_boolList",
+                 "backgroundRadc4", "sigmaC4", "testBool"]
 
-        self.input_path_dir = input_path_dir
-        self.zStack = zStack
-        self.ext = ext
+            n = [expath, ext, zStackBool, c1Name, c1Opt_boolList, backgroundRadc1, sigmaC1, c2Name, c2Opt_boolList,
+                 backgroundRadc2, sigmaC2, c3Name, c3Opt_boolList,
+                 backgroundRadc3, sigmaC3, c4Name, c4Opt_boolList,
+                 backgroundRadc4, sigmaC4, testBool]
 
-        return input_path_dir, zStack, info_channels
+            cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
+
+            self.input_path_dir = input_path_dir
+            self.zStack = zStack
+            self.ext = ext
+
+            return input_path_dir, zStack, info_channels
+
+        else:
+            self.input_path_dir = expath2
+            self.zStack = zStackBool
+            self.ext = ext
+            self.overwriteDB = False
+
+            cnames = [c1Name, c2Name, c3Name, c3Name]
+            backgrounds = [backgroundRadc1, backgroundRadc2, backgroundRadc3, backgroundRadc4]
+            radiuss = [sigmaC1, sigmaC2, sigmaC3, sigmaC4]
+            #[background, brightness_auto, brightness_man, pa]
+
+            info_channels = []
+            for i in range(0, 4):
+                channelName = cnames[i]
+                radius = backgrounds[i]
+
+                if i == 0:
+                    background = c1Opt_boolList[0]
+                    brightness_auto = c1Opt_boolList[1]
+                    brightness_man = c1Opt_boolList[2]
+                    pa = c1Opt_boolList[3]
+                    c1Name = channelName
+                    backgroundRadc1 = radius
+                    gaussian = sigmaC1
+
+                if i == 1:
+                    background = c2Opt_boolList[0]
+                    brightness_auto = c2Opt_boolList[1]
+                    brightness_man = c2Opt_boolList[2]
+                    pa = c2Opt_boolList[3]
+                    c2Name = channelName
+                    backgroundRadc2 = radius
+                    gaussian = sigmaC2
+                if i == 2:
+                    background = c3Opt_boolList[0]
+                    brightness_auto = c3Opt_boolList[1]
+                    brightness_man = c3Opt_boolList[2]
+                    pa = c3Opt_boolList[3]
+                    c3Name = channelName
+                    backgroundRadc3 = radius
+                    gaussian = sigmaC3
+
+                if i == 3:
+                    background = c4Opt_boolList[0]
+                    brightness_auto = c4Opt_boolList[1]
+                    brightness_man = c4Opt_boolList[2]
+                    pa = c4Opt_boolList[3]
+                    c4Name = channelName
+                    backgroundRadc4 = radius
+                    gaussian = sigmaC4
+
+                info_channels.append([channelName, background, radius, brightness_auto, brightness_man, pa, gaussian])
+                self.channels[i].setInfo(channel_name=channelName, background_substraction=background,
+                                         background_radius=radius, brightness_auto=brightness_auto,
+                                         brightness_man=brightness_man, pa=pa, gaussian_blur=gaussian)
+
+            self.test = False
 
     def getParticleAnalyzerOptions(self, channel_number, coloc=''):
         section = "ParticleAnalysisOptions%s" % channel_number
@@ -1109,121 +1204,171 @@ class Dialoger(object):
 
         # if self.channels[channel_number].pa:
         print channel_number
-        if coloc == "coloc":
-            gd = GenericDialog("Options for Channel %s colocalized Particle Analysis" % (channel_number + 1))
+        if not headless:
 
-        else:
-            gd = GenericDialog("Options for Channel %s Particle Analysis" % (channel_number + 1))
+            if coloc == "coloc":
+                gd = GenericDialog("Options for Channel %s colocalized Particle Analysis" % (channel_number + 1))
 
-        gd.addMessage("Set details for Channel %s" % (channel_number + 1))
+            else:
+                gd = GenericDialog("Options for Channel %s Particle Analysis" % (channel_number + 1))
 
-        if not coloc == "coloc":
-            gd.addMessage("Colocalisation with Channel?")
-            gd.addCheckboxGroup(1, 2, ["Inside mask?", "Or outside?"],
-                                paInOutBool_list)  # paInOutBool_list = [False, False]
-            gd.addCheckboxGroup(1, 4, ["C1", "C2", "C3", "C4"],
-                                paColocBool_list)  # paColocBool_list = [False, False, False, False]
-            gd.addNumericField("Enlarge mask in [um]? (For shrinkage put negative numbers)", paEnlarge,
-                               2)  # paEnlarge = 0.0
-        if channel_number == 0:
-            gd.addNumericField("Lower Particle Size:", paSizeA1, 0)  # paSizeA1 = 5
-            gd.addNumericField("Higher Particle Size:", paSizeB1, 0)  # paSizeB1 = 500
+            gd.addMessage("Set details for Channel %s" % (channel_number + 1))
 
-        else:
-            gd.addNumericField("Lower Particle Size:", paSizeA2, 3)  # paSizeA2 = 0.001
-            gd.addNumericField("Higher Particle Size:", paSizeB2, 0)  # paSizeB2 = 100
+            if not coloc == "coloc":
+                gd.addMessage("Colocalisation with Channel?")
+                gd.addCheckboxGroup(1, 2, ["Inside mask?", "Or outside?"],
+                                    paInOutBool_list)  # paInOutBool_list = [False, False]
+                gd.addCheckboxGroup(1, 4, ["C1", "C2", "C3", "C4"],
+                                    paColocBool_list)  # paColocBool_list = [False, False, False, False]
+                gd.addNumericField("Enlarge mask in [um]? (For shrinkage put negative numbers)", paEnlarge,
+                                   2)  # paEnlarge = 0.0
+            if channel_number == 0:
+                gd.addNumericField("Lower Particle Size:", paSizeA1, 0)  # paSizeA1 = 5
+                gd.addNumericField("Higher Particle Size:", paSizeB1, 0)  # paSizeB1 = 500
 
-        gd.addNumericField("Circularity bottom:", paCirc1, 1)  # paCirc1 = 0.0
-        gd.addNumericField("Circularity top:", paCirc2, 1)  # paCirc2 = 1
-        gd.addChoice("Binary Threshold Method", self.allMethods, paMethod)  # paMethod = "Huang"
+            else:
+                gd.addNumericField("Lower Particle Size:", paSizeA2, 3)  # paSizeA2 = 0.001
+                gd.addNumericField("Higher Particle Size:", paSizeB2, 0)  # paSizeB2 = 100
 
-        if channel_number == 0:
-            gd.addStringField("Do you want to test additional thresholds? (Separate only by space)", addMeth1,
-                              8)  # addMeth1 = ""
-            gd.addCheckbox("Watershed?", watershed1)  # watershed1 = True
+            gd.addNumericField("Circularity bottom:", paCirc1, 1)  # paCirc1 = 0.0
+            gd.addNumericField("Circularity top:", paCirc2, 1)  # paCirc2 = 1
+            gd.addChoice("Binary Threshold Method", self.allMethods, paMethod)  # paMethod = "Huang"
 
-        else:
-            gd.addStringField("Do you want to test additional thresholds? (Separate only by space)", addMeth2,
-                              8)  # addMeth2 = ""
-            gd.addCheckbox("Watershed?", watershed2)  # watershed2 = False
+            if channel_number == 0:
+                gd.addStringField("Do you want to test additional thresholds? (Separate only by space)", addMeth1,
+                                  8)  # addMeth1 = ""
+                gd.addCheckbox("Watershed?", watershed1)  # watershed1 = True
 
-        gd.showDialog()
-        if gd.wasCanceled():
-            print "User canceled dialog!"
-            return
+            else:
+                gd.addStringField("Do you want to test additional thresholds? (Separate only by space)", addMeth2,
+                                  8)  # addMeth2 = ""
+                gd.addCheckbox("Watershed?", watershed2)  # watershed2 = False
 
-        # pa_mask_c1 = False
-        if not coloc == "coloc":
-            pa_inside = gd.getNextBoolean()
-            pa_outside = gd.getNextBoolean()
+            gd.showDialog()
+            if gd.wasCanceled():
+                print "User canceled dialog!"
+                return
 
-            paInOutBool_list = [pa_inside, pa_outside]
+            # pa_mask_c1 = False
+            if not coloc == "coloc":
+                pa_inside = gd.getNextBoolean()
+                pa_outside = gd.getNextBoolean()
 
-            bool_c1 = gd.getNextBoolean()
-            bool_c2 = gd.getNextBoolean()
-            bool_c3 = gd.getNextBoolean()
-            bool_c4 = gd.getNextBoolean()
+                paInOutBool_list = [pa_inside, pa_outside]
 
-            pa_enlarge_mask = paEnlarge = gd.getNextNumber()
+                bool_c1 = gd.getNextBoolean()
+                bool_c2 = gd.getNextBoolean()
+                bool_c3 = gd.getNextBoolean()
+                bool_c4 = gd.getNextBoolean()
 
-            list_1whichChannel = paColocBool_list = [bool_c1, bool_c2, bool_c3, bool_c4]
+                pa_enlarge_mask = paEnlarge = gd.getNextNumber()
 
-        if channel_number == 0:
-            lowerSize = paSizeA1 = gd.getNextNumber()
-            higherSize = paSizeB1 = gd.getNextNumber()
-        else:
-            lowerSize = paSizeA2 = gd.getNextNumber()
-            higherSize = paSizeB2 = gd.getNextNumber()
+                list_1whichChannel = paColocBool_list = [bool_c1, bool_c2, bool_c3, bool_c4]
 
-        circ1 = paCirc1 = gd.getNextNumber()
-        circ2 = paCirc2 = gd.getNextNumber()
-        pa_threshold_c1 = paMethod = gd.getNextChoice()
+            if channel_number == 0:
+                lowerSize = paSizeA1 = gd.getNextNumber()
+                higherSize = paSizeB1 = gd.getNextNumber()
+            else:
+                lowerSize = paSizeA2 = gd.getNextNumber()
+                higherSize = paSizeB2 = gd.getNextNumber()
 
-        if channel_number == 0:
-            pa_addthreshold_c1 = addMeth1 = gd.getNextString()
-            watershed = watershed1 = gd.getNextBoolean()
-        else:
+            circ1 = paCirc1 = gd.getNextNumber()
+            circ2 = paCirc2 = gd.getNextNumber()
+            pa_threshold_c1 = paMethod = gd.getNextChoice()
 
-            pa_addthreshold_c1 = addMeth2 = gd.getNextString()
-            watershed = watershed2 = gd.getNextBoolean()
+            if channel_number == 0:
+                pa_addthreshold_c1 = addMeth1 = gd.getNextString()
+                watershed = watershed1 = gd.getNextBoolean()
+            else:
 
-        pa_thresholds_c1 = [pa_threshold_c1]
+                pa_addthreshold_c1 = addMeth2 = gd.getNextString()
+                watershed = watershed2 = gd.getNextBoolean()
 
-        if pa_addthreshold_c1:
-            pa_addthreshold_c1 = pa_addthreshold_c1.split(" ")
+            pa_thresholds_c1 = [pa_threshold_c1]
 
-            for i in pa_addthreshold_c1:
-                if i in self.allMethods:
-                    pa_thresholds_c1.append(i)
+            if pa_addthreshold_c1:
+                pa_addthreshold_c1 = pa_addthreshold_c1.split(" ")
+
+                for i in pa_addthreshold_c1:
+                    if i in self.allMethods:
+                        pa_thresholds_c1.append(i)
+                    else:
+                        print i + " is not a Threshold!"
+            if not coloc == "coloc":
+                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
+                                                      method=pa_thresholds_c1, list_1whichChannel=list_1whichChannel,
+                                                      watershed=watershed, pa_inside=pa_inside, pa_outside=pa_outside,
+                                                      pa_enlarge_mask=pa_enlarge_mask)
+                if channel_number == 0:
+                    l = ["paInOutBool_list", "paEnlarge", "paColocBool_list", "paSizeA1", "paSizeB1", "paCirc1", "paCirc2",
+                         "paMethod", "addMeth1"]
+                    n = [paInOutBool_list, paEnlarge, paColocBool_list, paSizeA1, paSizeB1, paCirc1, paCirc2, paMethod,
+                         addMeth1]
                 else:
-                    print i + " is not a Threshold!"
-        if not coloc == "coloc":
-            self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
-                                                  method=pa_thresholds_c1, list_1whichChannel=list_1whichChannel,
-                                                  watershed=watershed, pa_inside=pa_inside, pa_outside=pa_outside,
-                                                  pa_enlarge_mask=pa_enlarge_mask)
-            if channel_number == 0:
-                l = ["paInOutBool_list", "paEnlarge", "paColocBool_list", "paSizeA1", "paSizeB1", "paCirc1", "paCirc2",
-                     "paMethod", "addMeth1"]
-                n = [paInOutBool_list, paEnlarge, paColocBool_list, paSizeA1, paSizeB1, paCirc1, paCirc2, paMethod,
-                     addMeth1]
+                    l = ["paInOutBool_list", "paEnlarge", "paColocBool_list", "paSizeA2", "paSizeB2", "paCirc1", "paCirc2",
+                         "paMethod", "addMeth2"]
+                    n = [paInOutBool_list, paEnlarge, paColocBool_list, paSizeA2, paSizeB2, paCirc1, paCirc2, paMethod,
+                         addMeth2]
+
             else:
-                l = ["paInOutBool_list", "paEnlarge", "paColocBool_list", "paSizeA2", "paSizeB2", "paCirc1", "paCirc2",
-                     "paMethod", "addMeth2"]
-                n = [paInOutBool_list, paEnlarge, paColocBool_list, paSizeA2, paSizeB2, paCirc1, paCirc2, paMethod,
-                     addMeth2]
+                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
+                                                      method=pa_thresholds_c1, watershed=watershed)
+                if channel_number == 0:
+                    l = ["paSizeA1", "paSizeB1", "paCirc1", "paCirc2", "paMethod", "addMeth1"]
+                    n = [paSizeA1, paSizeB1, paCirc1, paCirc2, paMethod, addMeth1]
+                else:
+                    l = ["paSizeA2", "paSizeB2", "paCirc1", "paCirc2", "paMethod", "addMeth2"]
+                    n = [paSizeA2, paSizeB2, paCirc1, paCirc2, paMethod, addMeth2]
+
+            cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
 
         else:
-            self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
-                                                  method=pa_thresholds_c1, watershed=watershed)
-            if channel_number == 0:
-                l = ["paSizeA1", "paSizeB1", "paCirc1", "paCirc2", "paMethod", "addMeth1"]
-                n = [paSizeA1, paSizeB1, paCirc1, paCirc2, paMethod, addMeth1]
-            else:
-                l = ["paSizeA2", "paSizeB2", "paCirc1", "paCirc2", "paMethod", "addMeth2"]
-                n = [paSizeA2, paSizeB2, paCirc1, paCirc2, paMethod, addMeth2]
 
-        cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
+            if not coloc == "coloc":
+
+                paInOutBool_list = paInOutBool_list
+
+                pa_enlarge_mask = paEnlarge
+
+                list_1whichChannel = paColocBool_list
+
+            if channel_number == 0:
+                lowerSize = paSizeA1
+                higherSize = paSizeB1
+            else:
+                lowerSize = paSizeA2
+                higherSize = paSizeB2
+
+            circ1 = paCirc1
+            circ2 = paCirc2
+            pa_threshold_c1 = paMethod
+
+            if channel_number == 0:
+                pa_addthreshold_c1 = addMeth1
+                watershed = watershed1
+            else:
+
+                pa_addthreshold_c1 = addMeth2
+                watershed = watershed2
+
+            pa_thresholds_c1 = [pa_threshold_c1]
+
+            if pa_addthreshold_c1:
+                pa_addthreshold_c1 = pa_addthreshold_c1.split(" ")
+
+                for i in pa_addthreshold_c1:
+                    if i in self.allMethods:
+                        pa_thresholds_c1.append(i)
+                    else:
+                        print i + " is not a Threshold!"
+            if not coloc == "coloc":
+                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
+                                                      method=pa_thresholds_c1, list_1whichChannel=list_1whichChannel,
+                                                      watershed=watershed, pa_inside=paInOutBool_list[0], pa_outside=paInOutBool_list[1],
+                                                      pa_enlarge_mask=pa_enlarge_mask)
+            else:
+                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
+                                                      method=pa_thresholds_c1, watershed=watershed)
 
 
 IJ.run("Set Measurements...", "area mean standard min integrated redirect=None decimal=3")
