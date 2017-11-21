@@ -550,8 +550,8 @@ class SelectionManager(object):
             n = [manSel, autSel]
             cp.update(section, dict((na, str(n[i])) for i, na in enumerate(l)))
         else:
-            self.nManSelections = manSel
-            self.nAutoSelections = autSel
+            self.nManSelections = int(manSel)
+            self.nAutoSelections = int(autSel)
 
 
 
