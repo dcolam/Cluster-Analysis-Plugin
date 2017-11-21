@@ -1,6 +1,6 @@
 #MIT License
 #Copyright (c) 2017 dcolam
-
+# @String file
 from __future__ import with_statement
 import sys, time, os, traceback, random, time, ConfigParser
 from ij import IJ, ImagePlus, WindowManager
@@ -15,11 +15,11 @@ from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM
 from loci.plugins import BF
 
-if len(sys.argv) > 1:
-    if os.path.isdir(sys.argv[1]):
-        print "Headless mode"
-        headless = True
-        expath2 = sys.argv[1]
+if file:
+    #if os.path.isdir(sys.argv[1]):
+    print "Headless mode"
+    headless = True
+    expath2 = file
 else:
     headless = False
 
