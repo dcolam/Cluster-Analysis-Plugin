@@ -16,12 +16,10 @@ from ij.plugin.filter import EDM
 from loci.plugins import BF
 
 if len(sys.argv) > 1:
-    if sys.argv[1] == "h":
+    if os.path.isdir(sys.argv[1]):
         print "Headless mode"
         headless = True
-
-    if os.path.isdir(sys.argv[2]):
-        expath2 = sys.argv[2]
+        expath2 = sys.argv[1]
 else:
     headless = False
 
