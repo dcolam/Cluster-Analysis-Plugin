@@ -1,8 +1,36 @@
-language: java
-jdk: oraclejdk8
+#language: java
+#jdk: oraclejdk8
 branches:
   only:
   - master
   - "/.*-[0-9]+\\..*/"
+  
+before_script:
+ - "export DISPLAY=:99.0"
+ - "sh -e /etc/init.d/xvfb start"
+
 install: true
-script: ".travis/build.sh"
+script: 
+#!/usr/bin/env sh
+- set -e
+ 
+# Define some variables 
+- export IJ_PATH="$HOME/Fiji.app"
+- export URL="http://sites.imagej.net/$UPDATE_SITE/"
+- export IJ_LAUNCHER="$IJ_PATH/ImageJ-linux64"
+- export PATH="$IJ_PATH:$PATH"
+ 
+# Install ImageJ
+- mkdir -p $IJ_PATH/
+- cd $HOME/
+- wget --no-check-certificate https://downloads.imagej.net/fiji/latest/fiji-linux64.zip
+- unzip fiji-linux64.zip
+ 
+# Install the package
+- mv $TRAVIS_BUILD_DIR/Cluster_Analysis.zip $HOME/Fiji.app/plugins
+- unzip $HOME/Fiji.app/plugins/Cluster_Analysis.zip
+
+- xvfb-run -a IJ_LAUNCHER --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis.py
+
+
+
