@@ -1617,7 +1617,8 @@ IJ.redirectErrorMessages(True)
 memory = gc()
 print "Current Memory", memory
 #IJ.run("Monitor Memory...")
-IJ.run("Console")
+if not headless:
+	IJ.run("Console")
 IJ.setDebugMode(False)
 IJ.resetEscape()
 t = testParameters()
