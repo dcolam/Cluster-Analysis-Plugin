@@ -30,7 +30,7 @@ script:
 - mv $TRAVIS_BUILD_DIR/Cluster_Analysis.zip $HOME/Fiji.app/plugins
 - unzip $HOME/Fiji.app/plugins/Cluster_Analysis.zip
 
-- xvfb-run -a IJ_LAUNCHER --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis.py
+- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis.py
 
 
 
