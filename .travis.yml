@@ -29,7 +29,12 @@ script:
 # Install the package
 - mv $TRAVIS_BUILD_DIR/Cluster_Analysis.zip $HOME/Fiji.app/plugins
 - unzip $HOME/Fiji.app/plugins/Cluster_Analysis.zip
-
+- cd $HOME/Fiji.app
+- ls -l
+- cd $HOME/Fiji.app/plugins/
+- ls -l
+- cd Cluster_Analysis
+- ls -l
 - xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 $HOME/Fiji.app/plugins/Cluster_Analysis/Cluster_Analysis.py
 
 
