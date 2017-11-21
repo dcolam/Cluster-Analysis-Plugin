@@ -15,6 +15,11 @@ from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM
 from loci.plugins import BF
 
+if len(sys.argv) > 1:
+	if sys.argv[1] == "h":
+		print "Headless mode"
+		headless = True
+		
 
 class config(object):
     def __init__(self):
@@ -1611,7 +1616,7 @@ IJ.run("Close All", "")
 IJ.redirectErrorMessages(True)
 memory = gc()
 print "Current Memory", memory
-IJ.run("Monitor Memory...")
+#IJ.run("Monitor Memory...")
 IJ.run("Console")
 IJ.setDebugMode(False)
 IJ.resetEscape()
