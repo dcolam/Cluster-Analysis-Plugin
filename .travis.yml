@@ -34,7 +34,7 @@ script:
 - mv $TRAVIS_BUILD_DIR/Cluster_Analysis.py $HOME/Fiji.app/plugins/
 - mv $TRAVIS_BUILD_DIR/sqlite-jdbc-3.21.0.jar $HOME/Fiji.app/plugins/
 #- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 $HOME/Fiji.app/plugins/Cluster_Analysis.py h $TRAVIS_BUILD_DIR/ExampleImage
-- $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis.py "/TRAVIS_BUILD_DIR/ExampleImage"
+- $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis.py "file=$TRAVIS_BUILD_DIR/ExampleImage"
 
 
 
