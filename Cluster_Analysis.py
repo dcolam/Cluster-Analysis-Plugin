@@ -19,8 +19,9 @@ if len(sys.argv) > 1:
 	if sys.argv[1] == "h":
 		print "Headless mode"
 		headless = True
-		
-
+else:
+	headless = False
+	
 class config(object):
     def __init__(self):
         self.cp = ConfigParser.ConfigParser()
@@ -1617,8 +1618,8 @@ IJ.redirectErrorMessages(True)
 memory = gc()
 print "Current Memory", memory
 #IJ.run("Monitor Memory...")
-if not headless:
-	IJ.run("Console")
+#if not headless:
+#	IJ.run("Console")
 IJ.setDebugMode(False)
 IJ.resetEscape()
 t = testParameters()
