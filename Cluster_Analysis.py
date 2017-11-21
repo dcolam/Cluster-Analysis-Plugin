@@ -1,6 +1,6 @@
 #MIT License
 #Copyright (c) 2017 dcolam
-# @String file
+#@String file
 from __future__ import with_statement
 import sys, time, os, traceback, random, time, ConfigParser
 from ij import IJ, ImagePlus, WindowManager
