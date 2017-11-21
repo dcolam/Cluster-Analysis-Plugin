@@ -27,9 +27,11 @@ script:
 - unzip fiji-linux64.zip
  
 # Install the package
-- unzip $TRAVIS_BUILD_DIR/Cluster_Analysis.zip -d $HOME/Fiji.app/plugins
-- cd $HOME/Fiji.app/plugins/
-- ls -l
+#- unzip $TRAVIS_BUILD_DIR/Cluster_Analysis.zip -d $HOME/Fiji.app/plugins
+#- cd $HOME/Fiji.app/plugins/
+#- ls -l
+- mv $TRAVIS_BUILD_DIR/Cluster_Analysis.py $HOME/Fiji.app/plugins/
+- mv $TRAVIS_BUILD_DIR/sqlite-jdbc-3.21.0.jar $HOME/Fiji.app/plugins/
 - xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 $HOME/Fiji.app/plugins/Cluster_Analysis.py
 
 
