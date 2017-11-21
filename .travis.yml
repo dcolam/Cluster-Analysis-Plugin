@@ -23,9 +23,11 @@ script:
 # Install ImageJ
 - mkdir -p $IJ_PATH/
 - cd $HOME/
-- ls -l
 - wget --no-check-certificate https://downloads.imagej.net/fiji/latest/fiji-linux64.zip
 - unzip fiji-linux64.zip
+- cd $TRAVIS_BUILD_DIR/
+- cd ..
+- ls -l
  
 # Install the package
 #- unzip $TRAVIS_BUILD_DIR/Cluster_Analysis.zip -d $HOME/Fiji.app/plugins
