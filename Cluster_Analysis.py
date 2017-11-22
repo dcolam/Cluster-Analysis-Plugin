@@ -20,6 +20,7 @@ if file:
     print "Headless mode"
     headless = True
     expath2 = file
+    print expath2
 else:
     headless = False
 
