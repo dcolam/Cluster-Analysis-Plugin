@@ -1,7 +1,5 @@
 #MIT License
 #Copyright (c) 2017 dcolam
-filepath = ''
-#@String filepath
 from __future__ import with_statement
 import sys, time, os, traceback, random, time, ConfigParser
 from ij import IJ, ImagePlus, WindowManager
@@ -16,6 +14,9 @@ from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM
 from loci.plugins import BF
 
+
+filepath = ''
+#@String filepath
 if filepath:
     #if os.path.isdir(sys.argv[1]):
     print "Headless mode"
