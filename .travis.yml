@@ -28,7 +28,7 @@ script:
 - unzip fiji-linux64.zip
 - cd $TRAVIS_BUILD_DIR/
 - sudo apt-get install realpath
-- realpath /ExampleImage
+- realpath $TRAVIS_BUILD_DIR/ExampleImage
 - ls -l
 - cd ..
 - ls -l
