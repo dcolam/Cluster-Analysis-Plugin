@@ -47,13 +47,13 @@ script:
 #- $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --macro $HOME/Fiji.app/plugins/Cluster_Analysis.py 'file="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
 - export DISPLAY=:1
 - Xvfb $DISPLAY -auth /dev/null &
-(
+- (
 # the '(' starts a new sub shell. In this sub shell we start the worker processes:
 
 - $HOME/Fiji.app/ImageJ-linux64 --run $HOME/Fiji.app/plugins/Cluster_Analysis.py 'file="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"' # running the actual ijm script
  
-wait # waits until all 'program' processes are finished
+- wait # waits until all 'program' processes are finished
 # this wait sees only the 'program' processes, not the Xvfb process
-)
+- )
 
 
