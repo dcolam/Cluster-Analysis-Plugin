@@ -1,5 +1,6 @@
 #MIT License
 #Copyright (c) 2017 dcolam
+filepath = ''
 #@String filepath
 from __future__ import with_statement
 import sys, time, os, traceback, random, time, ConfigParser
