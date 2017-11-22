@@ -23,7 +23,7 @@ if filepath:
     headless = True
     expath2 = filepath
     print expath2
-elif sys.argv[1]:
+elif len(sys.argv) > 1:
     print "Headless mode"
     headless = True
     expath2 = filepath
