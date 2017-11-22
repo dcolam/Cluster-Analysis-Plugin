@@ -26,6 +26,11 @@ script:
 - wget --no-check-certificate https://downloads.imagej.net/fiji/latest/fiji-linux64.zip
 - unzip fiji-linux64.zip
 - cd $TRAVIS_BUILD_DIR/
+- ls -l
+- cd ..
+- ls -l
+- cd ..
+- ls -l
 - cd ..
 - ls -l
  
