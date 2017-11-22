@@ -1771,6 +1771,7 @@ d, s = t.startScript()
 
 errors = []
 start = time.time()
+print d.filenames
 for index, i in enumerate(d.filenames):
     if not IJ.escapePressed():
         try:
