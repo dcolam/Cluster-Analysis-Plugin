@@ -770,7 +770,7 @@ class Selection(object):
             self.name = SelName2
             self.saveRoi = SaveRoi2
             self.channels = maskBool_list
-            self.nIncrements = nOfIncrements
+            self.nIncrements = int(nOfIncrements)
             self.increment = incrementslengths
             self.inverse = inverseBool
             self.background = backgroundRadius
