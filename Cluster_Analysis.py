@@ -1810,11 +1810,12 @@ for index, i in enumerate(d.filenames):
 # db.insertData()
 db.closeConn()
 
-WaitForUserDialog(
-    "Analysis is done! \n Number of images analyzed: %s \n Running time: %s \n Number of failed images: %s"
-    % (len(d.filenames),
-       (time.time() - start),
-       len(errors))).show()
+if not headless:
+    WaitForUserDialog(
+        "Analysis is done! \n Number of images analyzed: %s \n Running time: %s \n Number of failed images: %s"
+        % (len(d.filenames),
+           (time.time() - start),
+           len(errors))).show()
 
 print "Number of images analyzed: ", len(d.filenames)
 
