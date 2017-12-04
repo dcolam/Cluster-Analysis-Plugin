@@ -21,12 +21,12 @@ After the successful installation you should restart Fiji and find the plugin un
 
 ## Prerequisites
 Only thing one should follow, is the right organisation of the folder where you keep the images to be analyzed. In particular the titles should all have the same structure, meaning all useful information should be separated by an underscore and all images should have the same number of information (XX_YY_ZZ.tif for example, another title should accordingly look something like this AA_BB_CC.tif).
-The script will initiate a database extracting informations from the title that you can specify later on.
+The script will initiate a database extracting informations from the title that you can specify and describe later on.
 
 ![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Dialog5.png?raw=True)
 
 ## Running the Plugin
-After clicking on Cluster Analysis, wait till the Current Memory window shows up and close it. A dialog should appear, where you need to specify the input folder path to your images as well as details for every channel of your images. If your images don't have 4 channels, don't worry, just ignore the ones you don't need. You can also name every channel individually and specify whether you want to perform a Particle Analysis. Also make sure to click on the Test parameter button to test whether everything is set up correctly. Note that currently, after every run your database will be overwritten and a Z-Stack with a Maximum Projection will be performed on your images with you have more than one slice.
+After clicking on Cluster Analysis, wait till the Current Memory window shows up and close it. A dialog should appear, where you need to specify the input folder path to your images as well as details for every channel of your images. If your images don't have 4 channels, don't worry, just ignore the ones you don't need. You can also name every channel individually and specify whether you want to perform a Particle Analysis. Also make sure to click on the Test parameter button to test whether everything is set up correctly. Note that currently, after every run your database will be overwritten and a Z-Stack with a Maximum Projection will be performed on your images if you have more than one slice.
 
 ![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Dialog1.png?raw=True)
 
@@ -49,7 +49,7 @@ In experiment modus, the script will limit the number of rendered images and all
 You will find four different tables in the database:
 - Particle_Analysis_Table containing information about every measurement performed
 - PA_Measurement_Tables containing information such as area and mean intensity about every single particle identified
-- Colocalisation_Analysis_Table containing information about every measurement performed in two channels
+- Colocalisation_Analysis_Table containing information about every measurement performed between two channels
 - Coloc_Measurement_Tables containing information such as area and mean intensity about every single particle identified
 
 ![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Database.png?raw=True "SQLite Browser")
