@@ -104,7 +104,7 @@ class config(object):
                                                "enlarge1": "3.5"},
                         # , "testBool": "True"},
                         "ChannelOptions": {
-                            "expath": "/Users/david/Documents/Home/Studium/Master/Stainings/RS_IF_030717/Syt1",
+                            "expath": "/",
                             "zStackBool": "True", "ext": ".lsm", "c1Name": "DAPI",
                             "c1Opt_boolList": "[True, False, False, True]", "backgroundRadc1": "200", "sigmaC1": "5",
                             "c2Name": "Cy3-mRNA", "c2Opt_boolList": "[True, False, False, False]",
