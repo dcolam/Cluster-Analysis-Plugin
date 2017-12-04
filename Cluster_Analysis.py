@@ -1787,7 +1787,8 @@ for index, i in enumerate(d.filenames):
             if index == 0:
                 db_path = d.output_path_dict["output_table_path"]
                 db = db_interface(db_path, l)
-                cp.writeIni()
+                if not headless:
+                    cp.writeIni()
             else:
                 db.extractData(l)
 
