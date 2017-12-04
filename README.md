@@ -46,13 +46,13 @@ The script will choose a random image after setting all parameters and show you 
 
 In experiment modus, the script will limit the number of rendered images and all measurements are run in the background. This will make the analysis much faster. After the analysis is done, you will find in your original folder a new folder called Particle Analysis that include a folder containing the saved region of interest (.roi files) to check on your segmentation outcome, as well as .tif file versions of your images. In the Output Table folder you will find the Output.db file with all the tables and measurements stored in an Sqlite-file and an ini.cfg file, that contain the defined parameters of your experiment.
 
-![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Database.png?raw=True)
-
 You will find four different tables in the database:
 - Particle_Analysis_Table containing information about every measurement performed
 - PA_Measurement_Tables containing information such as area and mean intensity about every single particle identified
 - Colocalisation_Analysis_Table containing information about every measurement performed in two channels
 - Coloc_Measurement_Tables containing information such as area and mean intensity about every single particle identified
+
+![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Database.png?raw=True "SQLite Browser")
 
 It is recommended to open your Output.db file with a a DB-Browser such as DB-Browser for Sqlite (http://sqlitebrowser.org/) for a quick look, but to import your datasets using Matlab, R, Python or another popular programming language to properly analyze your data. The usual routine consists of creating a connection to the database and defining an option string containing conditional-statements to correctly retrieve the corresponding measurements.
 
