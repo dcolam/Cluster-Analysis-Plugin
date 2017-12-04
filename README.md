@@ -1,4 +1,5 @@
 # Cluster-Analysis-Plugin
+https://travis-ci.org/dcolam/Cluster-Analysis-Plugin.svg?branch=master
 Fiji-Plugin to segment and quantify confocal images
 
 # Manual
