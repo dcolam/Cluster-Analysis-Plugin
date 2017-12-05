@@ -14,13 +14,14 @@ from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM
 from loci.plugins import BF
 
-
+filepath = ""
+#@String filepath
 
 if filepath:
     #if os.path.isdir(sys.argv[1]):
     print "Headless mode"
     headless = True
-    expath2 = sys.argv[1]
+    expath2 = filepath
     print expath2
 elif len(sys.argv) > 1:
     print "Headless mode"
