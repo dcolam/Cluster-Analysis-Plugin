@@ -14,7 +14,7 @@ from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM
 from loci.plugins import BF
 
-filepath = ""
+#filepath = ""
 #@String filepath
 
 if filepath:
