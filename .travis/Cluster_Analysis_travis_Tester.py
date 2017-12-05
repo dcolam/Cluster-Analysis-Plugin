@@ -1,5 +1,5 @@
-#MIT License
-#Copyright (c) 2017 dcolam
+# MIT License
+# Copyright (c) 2017 dcolam
 from __future__ import with_statement
 import sys, time, os, traceback, random, time, ConfigParser
 from ij import IJ, ImagePlus, WindowManager
@@ -13,11 +13,26 @@ from ij.plugin import ChannelSplitter, ImageCalculator, RGBStackMerge, ZProjecto
 from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM
 from loci.plugins import BF
-headless = False
+
+# filepath = ""
+# @String filepath
+
+if filepath:
+    # if os.path.isdir(sys.argv[1]):
+    print "Headless mode"
+    headless = True
+    expath2 = filepath
+    print expath2
+elif len(sys.argv) > 1:
+    print "Headless mode"
+    headless = True
+    expath2 = sys.argv[1]
+    print expath2
+else:
+    headless = False
 
 
 class config(object):
-
     def __init__(self):
         self.cp = ConfigParser.ConfigParser()
         self.cp.optionxform = str
@@ -125,7 +140,8 @@ class config(object):
                                                      "paCirc1": "0.0", "paCirc2": "1.0", "paMethod": "Huang",
                                                      "addMeth1": "", "watershed1": "True",
                                                      "addMeth2": "", "watershed2": "False"},
-                        "DB_Interface": {"l": '["InternalID", "Timepoint", "Gene", "Region", "", "", "", "", "", "", "", "", "", "", ""]'}}
+                        "DB_Interface": {
+                            "l": '["InternalID", "Timepoint", "Gene", "Region", "", "", "", "", "", "", "", "", "", "", ""]'}}
 
         self.section_dict_default = section_dict
         self.writeIni(default=True)
@@ -189,7 +205,7 @@ class db_interface(object):
             gd = GenericDialog("Describe the random filename %s as seen in the result-database" % image_name)
             gd.addMessage("To leave out an option, don't type anything in the corresponding field")
 
-            #l = ["InternalID", "Timepoint", "Gene", "Region", "", "", "", "", "", "", "", "", "", "", ""]
+            # l = ["InternalID", "Timepoint", "Gene", "Region", "", "", "", "", "", "", "", "", "", "", ""]
 
             for i, x in enumerate(descriptions):
                 gd.addStringField(x, l[i], 10)
@@ -203,7 +219,6 @@ class db_interface(object):
             cp.update("DB_Interface", {"l": str(self.raw_descriptor)})
         else:
             self.raw_descriptor = l
-
 
         self.descriptor_PA += [x for x in self.raw_descriptor if x] + ["Channel_Name", "Selection", "Selection_Area",
                                                                        "Method", "Number_of_Particles"]
@@ -470,6 +485,7 @@ class db_interface(object):
         # preppedStmt.close()
         return True
 
+
 class Channel(object):
     def __init__(self):
         self.channel_name = ''
@@ -517,7 +533,7 @@ class SelectionManager(object):
 
         section = "SelectionManager"
 
-        #cp.cp.read(cp.iniPath)
+        # cp.cp.read(cp.iniPath)
         manSel = cp.cp.getfloat(section, "manSel")
         autSel = cp.cp.getfloat(section, "autSel")
 
@@ -542,7 +558,6 @@ class SelectionManager(object):
         else:
             self.nManSelections = int(manSel)
             self.nAutoSelections = int(autSel)
-
 
 
 class Selection(object):
@@ -598,9 +613,9 @@ class Selection(object):
             self.selectAreaAuto()
             attr = vars(self)
             print ', '.join("%s: %s" % item for item in attr.items())
-        # self.getSelection()
+            # self.getSelection()
 
-        #cp.writeIni()
+            # cp.writeIni()
 
     def setImage(self, image):
         self.imp = image.imp
@@ -695,22 +710,25 @@ class Selection(object):
             gd.addMessage("Choose a channel (or more) to create the combined mask")
             gd.addCheckboxGroup(1, 4, ["Mask from C1: ", "Mask from C2: ", "Mask from C3: ", "Mask from C4: "],
                                 maskBool_list)  # maskBool_list = [True, True, False, True]
-            gd.addNumericField("Incremental option for dendritic segment analysis (type how many increments, 0 if not): ",
-                               nOfIncrements, 0)  # nOfIncrements = 4
+            gd.addNumericField(
+                "Incremental option for dendritic segment analysis (type how many increments, 0 if not): ",
+                nOfIncrements, 0)  # nOfIncrements = 4
             gd.addNumericField("Incremental Option in um (0 if not): ", incrementslengths, 0)  # incrementslengths = 50
             gd.addCheckbox("Add an inverse selection of this mask?", inverseBool)  # inverseBool = True
             gd.addMessage("_________________________________________________________________________________")
             gd.addNumericField("Background radius:", backgroundRadius, 0)  # backgroundRadius = 50
             gd.addNumericField("Sigma of Gaussian Blur (0 if not, otherwise state the radius)", sigma1, 2)  # sigma1 = 5
             gd.addChoice("Binary Threshold Method", self.allMethods, binMethod1)  # binMethod1 =  Huang
-            gd.addCheckbox("Select a certain size and roundness range for the selection?", selectSizeBool)  # selectSizeBool = True
+            gd.addCheckbox("Select a certain size and roundness range for the selection?",
+                           selectSizeBool)  # selectSizeBool = True
             gd.addNumericField("Lower Particle Size:", sizeA1, 0)  # sizeA1 = 1000
             gd.addNumericField("Higher Particle Size:", sizeB2, 0)  # sizeB2 = 200000
             gd.addNumericField("Circularity bottom:", circA1, 1)  # circA1 = 0.0
 
             gd.addNumericField("Circularity top:", circB2, 1)  # circB2 = 0.5
 
-            gd.addNumericField("Enlarge mask in [um]? (For shrinkage put negative numbers)", enlarge1, 2)  # enlarge1 = 3.5
+            gd.addNumericField("Enlarge mask in [um]? (For shrinkage put negative numbers)", enlarge1,
+                               2)  # enlarge1 = 3.5
             # gd.addMessage("_________________________________________________________________________________")
             # gd.addCheckbox("Test parameters on random pictures?", testBool) #testBool = True
 
@@ -744,7 +762,8 @@ class Selection(object):
                  "backgroundRadius", "sigma1", "binMethod1", "selectSizeBool", "sizeA1", "sizeB2",
                  "circA1", "circB2", "enlarge1"]  # , "testBool"]
 
-            n = [SelName2, SaveRoi2, maskBool_list, nOfIncrements, incrementslengths, inverseBool, backgroundRadius, sigma1,
+            n = [SelName2, SaveRoi2, maskBool_list, nOfIncrements, incrementslengths, inverseBool, backgroundRadius,
+                 sigma1,
                  binMethod1, selectSizeBool, sizeA1, sizeB2,
                  circA1, circB2, enlarge1]  # , testBool]
 
@@ -766,7 +785,6 @@ class Selection(object):
             self.circa = circA1
             self.circb = circB2
             self.enlarge = enlarge1
-
 
     def getSelection(self):
         rm = RoiManager.getInstance()
@@ -821,7 +839,7 @@ class Selection(object):
             mask1.changes = False
             mask1.close()
             mask = IJ.getImage()
-            #mask.hide()
+            # mask.hide()
             IJ.run(mask, "Fill Holes", "")
             IJ.run(mask, "Create Selection", "")
             roi = mask.getRoi()
@@ -968,7 +986,6 @@ class Dialoger(object):
 
         self.filenames = filenames
 
-
     def getOptions(self):
         section = "ChannelOptions"
         expath = cp.cp.get(section, "expath")
@@ -1001,7 +1018,7 @@ class Dialoger(object):
             gd.addStringField("Input Folder", expath,
                               75)  # expPath = "/Users/david/Documents/Home/Studium/Master/Stainings/RS_IF_030717/Syt1"
             gd.addCheckboxGroup(1, 2, ["Z-project?", "Overwrite old database if it already exists?"],
-                                [zStackBool, True]) # zStackBool = True
+                                [zStackBool, True])  # zStackBool = True
             gd.addStringField("File extension", ext, 10)
             gd.addMessage(
                 "__________________________________________________________________________________________________________________________________________________")
@@ -1126,7 +1143,7 @@ class Dialoger(object):
             cnames = [c1Name, c2Name, c3Name, c3Name]
             backgrounds = [backgroundRadc1, backgroundRadc2, backgroundRadc3, backgroundRadc4]
             radiuss = [sigmaC1, sigmaC2, sigmaC3, sigmaC4]
-            #[background, brightness_auto, brightness_man, pa]
+            # [background, brightness_auto, brightness_man, pa]
 
             info_channels = []
             for i in range(0, 4):
@@ -1285,23 +1302,27 @@ class Dialoger(object):
                     else:
                         print i + " is not a Threshold!"
             if not coloc == "coloc":
-                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
+                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1,
+                                                      circ2=circ2,
                                                       method=pa_thresholds_c1, list_1whichChannel=list_1whichChannel,
                                                       watershed=watershed, pa_inside=pa_inside, pa_outside=pa_outside,
                                                       pa_enlarge_mask=pa_enlarge_mask)
                 if channel_number == 0:
-                    l = ["paInOutBool_list", "paEnlarge", "paColocBool_list", "paSizeA1", "paSizeB1", "paCirc1", "paCirc2",
+                    l = ["paInOutBool_list", "paEnlarge", "paColocBool_list", "paSizeA1", "paSizeB1", "paCirc1",
+                         "paCirc2",
                          "paMethod", "addMeth1"]
                     n = [paInOutBool_list, paEnlarge, paColocBool_list, paSizeA1, paSizeB1, paCirc1, paCirc2, paMethod,
                          addMeth1]
                 else:
-                    l = ["paInOutBool_list", "paEnlarge", "paColocBool_list", "paSizeA2", "paSizeB2", "paCirc1", "paCirc2",
+                    l = ["paInOutBool_list", "paEnlarge", "paColocBool_list", "paSizeA2", "paSizeB2", "paCirc1",
+                         "paCirc2",
                          "paMethod", "addMeth2"]
                     n = [paInOutBool_list, paEnlarge, paColocBool_list, paSizeA2, paSizeB2, paCirc1, paCirc2, paMethod,
                          addMeth2]
 
             else:
-                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
+                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1,
+                                                      circ2=circ2,
                                                       method=pa_thresholds_c1, watershed=watershed)
                 if channel_number == 0:
                     l = ["paSizeA1", "paSizeB1", "paCirc1", "paCirc2", "paMethod", "addMeth1"]
@@ -1315,7 +1336,6 @@ class Dialoger(object):
         else:
 
             if not coloc == "coloc":
-
                 paInOutBool_list = paInOutBool_list
 
                 pa_enlarge_mask = paEnlarge
@@ -1352,12 +1372,15 @@ class Dialoger(object):
                     else:
                         print i + " is not a Threshold!"
             if not coloc == "coloc":
-                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
+                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1,
+                                                      circ2=circ2,
                                                       method=pa_thresholds_c1, list_1whichChannel=list_1whichChannel,
-                                                      watershed=watershed, pa_inside=paInOutBool_list[0], pa_outside=paInOutBool_list[1],
+                                                      watershed=watershed, pa_inside=paInOutBool_list[0],
+                                                      pa_outside=paInOutBool_list[1],
                                                       pa_enlarge_mask=pa_enlarge_mask)
             else:
-                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1, circ2=circ2,
+                self.channels[channel_number].setInfo(lowerSize=lowerSize, higherSize=higherSize, circ1=circ1,
+                                                      circ2=circ2,
                                                       method=pa_thresholds_c1, watershed=watershed)
 
 
@@ -1432,13 +1455,12 @@ class Image(object):
         self.sm = selectionManager
         self.path = path2image
         self.name = os.path.splitext(os.path.split(self.path)[1])[0]
-        #self.preimp = IJ.openImage(self.path)
+        # self.preimp = IJ.openImage(self.path)
         # self.preimp.show()
-        self.preimp = BF.openImagePlus(self.path)[0] #Use Bioformat to open also .czi
+        self.preimp = BF.openImagePlus(self.path)[0]  # Use Bioformat to open also .czi
 
-
-        #print type(imps)
-        #for imp in imps:
+        # print type(imps)
+        # for imp in imps:
         #    imp.show()
 
 
@@ -1743,17 +1765,18 @@ def gc():
     # IJ.run("Collect Garbage")
     return IJ.currentMemory()
 
+
 dir_path = os.path.dirname(os.path.realpath('__file__'))
 cp = config()
 cp.readIni()
-#cp.cp.read(cp.iniPath)
+# cp.cp.read(cp.iniPath)
 
 IJ.run("Close All", "")
 IJ.redirectErrorMessages(True)
 memory = gc()
 print "Current Memory", memory
-#IJ.run("Monitor Memory...")
-#if not headless:
+# IJ.run("Monitor Memory...")
+# if not headless:
 #	IJ.run("Console")
 IJ.setDebugMode(False)
 IJ.resetEscape()
@@ -1789,7 +1812,7 @@ for index, i in enumerate(d.filenames):
             IJ.run("Close All")
             l = None
 
-#IJ.run("Collect Garbage")
+# IJ.run("Collect Garbage")
 # db.getDescription()
 # db.insertData()
 db.closeConn()
@@ -1807,6 +1830,6 @@ print 'It took', time.time() - start, 'seconds.'
 
 for e in errors:
     print "Failed Images: ", e
-    
+
 if headless:
     sys.exit(0)
