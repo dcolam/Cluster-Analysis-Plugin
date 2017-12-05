@@ -15,8 +15,8 @@ from ij.plugin.filter import EDM
 from loci.plugins import BF
 
 
-#filepath = ''
-#@String filepath
+filepath = ''
+
 if filepath:
     #if os.path.isdir(sys.argv[1]):
     print "Headless mode"
