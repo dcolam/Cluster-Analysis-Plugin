@@ -15,7 +15,6 @@ from ij.plugin.filter import EDM
 from loci.plugins import BF
 
 
-
 if len(sys.argv) > 1:
     #if os.path.isdir(sys.argv[1]):
     print "Headless mode"
