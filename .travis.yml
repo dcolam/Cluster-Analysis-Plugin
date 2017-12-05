@@ -43,7 +43,7 @@ script:
 #- ls -l
 - mv $TRAVIS_BUILD_DIR/Cluster_Analysis.py $HOME/Fiji.app/plugins/
 - mv $TRAVIS_BUILD_DIR/sqlite-jdbc-3.21.0.jar $HOME/Fiji.app/plugins/
-- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --run $HOME/Fiji.app/plugins/Cluster_Analysis.py '"/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
+- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 $HOME/Fiji.app/plugins/Cluster_Analysis.py "/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"
 #- $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --macro $HOME/Fiji.app/plugins/Cluster_Analysis.py 'file="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
 #- export DISPLAY=:1
 #- Xvfb $DISPLAY -auth /dev/null &
