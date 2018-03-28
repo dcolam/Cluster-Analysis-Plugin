@@ -14,9 +14,6 @@ from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM
 from loci.plugins import BF
 
-#filepath = ""
-#@String filepath
-
 if filepath:
     # if os.path.isdir(sys.argv[1]):
     print "Headless mode"
@@ -1773,7 +1770,6 @@ def exit(status=""):
         raise RuntimeException(Macro.MACRO_CANCELED) #Ignored by IJ2's Console
     else:
         raise RuntimeError(status)
-
 
 dir_path = os.path.dirname(os.path.realpath('__file__'))
 cp = config()
