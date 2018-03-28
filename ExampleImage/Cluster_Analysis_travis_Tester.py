@@ -1765,6 +1765,15 @@ def gc():
     # IJ.run("Collect Garbage")
     return IJ.currentMemory()
 
+def exit(status=""):
+    """Exits without displaying a stack trace if :status: is empty"""
+    if not status:
+        from java.lang import RuntimeException
+        from ij import Macro
+        raise RuntimeException(Macro.MACRO_CANCELED) #Ignored by IJ2's Console
+    else:
+        raise RuntimeError(status)
+
 
 dir_path = os.path.dirname(os.path.realpath('__file__'))
 cp = config()
@@ -1827,10 +1836,10 @@ if not headless:
 print "Number of images analyzed: ", len(d.filenames)
 
 print 'It took', time.time() - start, 'seconds.'
-
 if errors:
     for e in errors:
         print "Failed Images: ", e
 
 if headless:
-    sys.exit()
+    #sys.exit()
+    exit()
