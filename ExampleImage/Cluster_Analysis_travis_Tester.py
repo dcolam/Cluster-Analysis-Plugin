@@ -1828,8 +1828,9 @@ print "Number of images analyzed: ", len(d.filenames)
 
 print 'It took', time.time() - start, 'seconds.'
 
-for e in errors:
-    print "Failed Images: ", e
+if errors:
+    for e in errors:
+        print "Failed Images: ", e
 
 if headless:
     sys.exit(0)
