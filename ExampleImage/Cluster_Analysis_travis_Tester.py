@@ -1839,5 +1839,5 @@ if errors:
         print "Failed Images: ", e
 
 if headless:
-    #sys.exit()
-    exit()
+    sys.exit()
+    #exit()
