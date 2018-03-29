@@ -1838,6 +1838,6 @@ if errors:
     for e in errors:
         print "Failed Images: ", e
 
-if headless:
-    sys.exit()
+#if headless:
+ #   sys.exit()
     #exit()
