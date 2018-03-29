@@ -14,6 +14,8 @@ from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM
 from loci.plugins import BF
 
+#@String filepath
+
 if filepath:
     # if os.path.isdir(sys.argv[1]):
     print "Headless mode"
