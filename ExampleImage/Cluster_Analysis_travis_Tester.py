@@ -4,7 +4,7 @@ from __future__ import with_statement
 import sys, time, os, traceback, random, time, ConfigParser
 from ij import IJ, ImagePlus, WindowManager
 from org.sqlite import SQLiteConfig
-from java.lang import Class
+from java.lang import Class, System
 from loci.plugins.util import WindowTools as wt
 from java.sql import DriverManager, SQLException, Types, Statement
 from ij.gui import GenericDialog, WaitForUserDialog, Roi
@@ -1838,6 +1838,6 @@ if errors:
     for e in errors:
         print "Failed Images: ", e
 
-#if headless:
- #   sys.exit()
+if headless:
+    System.exit(0)
     #exit()
