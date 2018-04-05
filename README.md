@@ -36,7 +36,7 @@ The general script workflow consists of several steps:
 - Either reconfigure the parameters or start the experiment
 - In experimental mode, all images will be analyzed in the background
 
-# Parameter Configuration
+### Parameter Configuration
 After clicking on Cluster Analysis, a dialog should appear, where you need to specify the input folder path to your images as well as details for every channel of your images. If your images don't have 4 channels, just ignore the ones you don't need. You can also name every channel individually and specify whether you want to perform a Particle Analysis. Also make sure to click on the Test parameter button to test whether all parameters are set up correctly. Note that currently a Z-Stack with a Maximum Projection will always be performed on your images if you have more than one slice. Specify also the delimiter used in your titles, so that information can be extracted from the image titles and used in your database.
 
 ![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Dialog1.png?raw=True)
@@ -55,7 +55,13 @@ One can also include a step-wise segment analysis from your primary segmentation
 
 The script will choose a random image after setting all parameters and show you all steps of the analysis to check whether the parameters meet all criterias. When you are satisfied with the outcome, press on Start Experiment or try another image or define all parameters again.The old parameters will be saved and remembered for when you want to re-run the script.
 
-![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Dialog6.png?raw=True)
+![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Result1.png?raw=True)
+
+Example of successful segmentation of the pyramidal cell layer (as red line) of the CA1 in the hippocampus and the quantificitation of a certain mRNA within the segmentation (thresholded particles in red, found particles segmented in green).
+
+![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Coloc_Example.png?raw=True)
+
+Example of a colocalisation analysis between a dendritic (MAP2 in grey), a presynaptic (vGlut1 in red) and a postsynaptic marker (Shank1 in green) and their corresponding colocalisations (thresholded particles in red, found particles segmented in green).
 
 In experiment modus, the script will limit the number of rendered images and all measurements are run in the background. This will make the analysis much faster. After the analysis is done, you will find in your original folder a new folder called Particle Analysis that include a folder containing the saved region of interest (.roi files) to check on your segmentation outcome, as well as .tif file versions of your images after preprocessing. In the Output Table folder, you will find a SQlite database called Output.db with all the tables and measurements stored an ini.cfg file, that contain the defined parameters of your experiment.
 
