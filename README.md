@@ -79,6 +79,6 @@ These tables are also available as .csv-tables in the Output Table folder.
 
 ![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Database.png?raw=True "SQLite Browser")
 
-It is recommended to open your Output.db file with a a DB-Browser such as DB-Browser for Sqlite (http://sqlitebrowser.org/) for a quick look, but to import your datasets using Matlab, R, Python or another popular programming language to properly analyze your data. The usual routine consists of creating a connection to the database and defining an option string containing conditional-statements to correctly retrieve the corresponding measurements.
+It is recommended to open your Output.db file with a a DB-Browser such as DB-Browser for Sqlite (http://sqlitebrowser.org/) for a quick look, but to import your datasets using Matlab, R, Python or another popular programming language to properly analyze your data. The usual routine consists of creating a connection to the database and defining a query containing conditional-statements to correctly retrieve the corresponding measurements.
 
 For more information, don't hesitate to contact me.
