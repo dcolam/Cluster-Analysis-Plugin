@@ -53,7 +53,9 @@ After defining parameters for all corresponding channels, you can either choose 
 
 ![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Dialog4.png?raw=True)
 
-One can also include a step-wise segment analysis from your primary segmentation with a defined step range in microns. This can be particularly useful when you want to analyse segments of synaptic rich layers such as the Radiatum in the hippocampus.
+One can also include a step-wise segment analysis from your primary segmentation outcome with a defined step range in microns. This can be particularly useful when you want to analyse segments of synaptic rich layers such as the Radiatum in the hippocampus.
+
+![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Denditic_Segm_Analysis.png?raw=True)
 
 The script will choose a random image after setting all parameters and show you all steps of the analysis to check whether the parameters meet all criterias. When you are satisfied with the outcome, press on Start Experiment or try another image or define all parameters again.The old parameters will be saved and remembered for when you want to re-run the script.
 
