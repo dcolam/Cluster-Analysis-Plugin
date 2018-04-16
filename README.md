@@ -23,12 +23,16 @@ Alternatively, you can can either download this whole repository as a .zip-file 
 After the successful installation you should restart Fiji and find the plugin under PlugIns > Cluster Analysis.
 
 ## Prerequisites
-Only thing one should follow, is the right organisation of the folder where you keep the images to be analyzed. In particular the titles should all have the same structure, meaning all useful information should be separated by a common delimiter (e.g. an underscore) that you need to specify and all images should have the same number of information (XX_YY_ZZ.tif for example, another title should accordingly look something like this AA_BB_CC.tif).
+Only thing one should follow, is the right organisation of the folder where you keep the images to be analyzed. In particular the titles should all have the same structure, meaning all useful information should be separated by a common delimiter (e.g. an underscore) that you need to specify and all images should have the same number of information (XX_YY_ZZ.tif for example, another title should accordingly look something like this AA_BB_CC.tif). The script throw an error, if the titles don't have the same length.
 The script will initiate a database extracting informations from the title that you can specify and describe later on.
 
 ![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Dialog5.png?raw=True)
 
+If you want to exclude a particular information, don't type anything into the field
+
 ## Running the Plugin
+
+After successfull installation, you will find in Plugins > Cluster Analysis three sections, namely the script starter, the Manual and Helper which redirects you to this github-repository and a ini.cfg-file loader which will allow you to feed in older ini.cfg-files from other experiments. Just load first the ini.file and then run the Cluster Analysis script with the new parameters.
 
 The general script workflow consists of several steps:
 - Configuration of Parameters for the whole experiment
