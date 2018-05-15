@@ -35,8 +35,8 @@ if not headless:
 else:
 #	dir_path = os.path.realpath('__file__')
 	#print dir_path, os.path.dirname(os.path.realpath('__file__'))
-	dir_path = "/Users/david/Fiji.app"
-	dir_path = os.path.join(dir_path, "plugins", "Cluster_Analysis")
+	dir_path = os.path.dirname(os.path.realpath('__file__'))
+	dir_path = os.path.join(dir_path, "Fiji.app", "plugins", "Cluster_Analysis")
 
 	
 class config(object):
