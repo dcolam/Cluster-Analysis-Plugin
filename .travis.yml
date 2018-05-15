@@ -36,22 +36,11 @@ script:
 #- mkdir $HOME/Fiji.app/plugins/Cluster_Analysis
 - mv $TRAVIS_BUILD_DIR/Cluster_Analysis/ $HOME/Fiji.app/plugins/
 - cd $HOME/Fiji.app/plugins/Cluster_Analysis/
-- ls -l
 #- mv $TRAVIS_BUILD_DIR/ExampleImage/ini.cfg $HOME/Fiji.app/plugins/Cluster_Analysis
 - mv $TRAVIS_BUILD_DIR/sqlite-jdbc-3.21.0.jar $HOME/Fiji.app/plugins/
-- $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis/ImageJ2/Cluster_Analysis_BETA_v21.py 'expath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage",headless="True",measure="False"'
-#- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --headless $HOME/Fiji.app/plugins/Cluster_Analysis.py "/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"
-#- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --ij2 --run $HOME/Fiji.app/plugins/Cluster_Analysis_travis_Tester.py 'filepath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
-#- $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --macro $HOME/Fiji.app/plugins/Cluster_Analysis.py 'file="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
-#- export DISPLAY=:1
-#- Xvfb $DISPLAY -auth /dev/null &
-#- (
-# the '(' starts a new sub shell. In this sub shell we start the worker processes:
+- $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis/ImageJ2/Cluster_Analysis_BETA_v2.py 'expath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage",headless="True",measure="False"'
 
-#- $HOME/Fiji.app/ImageJ-linux64 --run $HOME/Fiji.app/plugins/Cluster_Analysis.py '"/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"' # running the actual ijm script
- 
-#- wait # waits until all 'program' processes are finished
-# this wait sees only the 'program' processes, not the Xvfb process
-#- )
+#- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --ij2 --run $HOME/Fiji.app/plugins/Cluster_Analysis_travis_Tester.py 'filepath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
+
 
 
