@@ -36,7 +36,7 @@ else:
 #	dir_path = os.path.realpath('__file__')
 	#print dir_path, os.path.dirname(os.path.realpath('__file__'))
 	dir_path = os.path.dirname(os.path.realpath('__file__'))
-	dir_path = os.path.join(dir_path, "Fiji.app", "plugins", "Cluster_Analysis")
+	dir_path = os.path.join(dir_path, "ImageJ2") #, "plugins", "Cluster_Analysis")
 
 	
 class config(object):
