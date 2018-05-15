@@ -32,7 +32,7 @@ If you want to exclude a particular information, don't type anything into the fi
 
 ## Running the Plugin
 
-After successfull installation, you will find in Plugins > Cluster Analysis three sections, namely the script starter, the Manual and Helper which redirects you to this github-repository and a ini.cfg-file loader which will allow you to feed in older ini.cfg-files from other experiments. Just load first the ini.file and then run the Cluster Analysis script with the new parameters.
+After successfull installation, you will find in Plugins > Cluster Analysis three sections, namely the script starter, the Manual and Helper which redirects you to this github-repository and a ini.cfg-file loader which will allow you to feed in older ini.cfg-files from other experiments. Load an ini.file from a previous experiment before starting the script and then run the Cluster Analysis script with the new parameters.
 
 The general script workflow consists of several steps:
 - Configuration of Parameters for the whole experiment
@@ -41,7 +41,7 @@ The general script workflow consists of several steps:
 - In experimental mode, all images will be analyzed in the background
 
 ### Parameter Configuration
-After clicking on Cluster Analysis, a dialog should appear, where you need to specify the input folder path to your images as well as details for every channel of your images. If your images don't have 4 channels, just ignore the ones you don't need. You can also name every channel individually and specify whether you want to perform a Particle Analysis. Also make sure to click on the Test parameter button to test whether all parameters are set up correctly. Note that currently a Z-Stack with a Maximum Projection will always be performed on your images if you have more than one slice. Specify also the delimiter used in your titles, so that information can be extracted from the image titles and used in your database.
+After clicking on Cluster Analysis, a dialog should appear, where you need to specify the input folder path to your images. In addition, you can run the script in headless-mode, meaning that the current ini.cfg with all parameters from a previous run will be read directly and run directly in experimental mode. You also have the possibility to click the "Set Measurements"-option to choose which type of measurements such as Area, Mean Grey Value, Integrated Intensity or Perimeter to describe the particles in your images. In the next dialog, you will be prompted to define several details for every channel of your images. If your images don't have 4 channels, just ignore the ones you don't need. You can also name every channel individually and specify whether you want to perform a Particle Analysis. Also make sure to click on the Test parameter button to test whether all parameters are set up correctly. Note that currently a Z-Stack with a Maximum Projection will always be performed on your images if you have more than one slice. Specify also the delimiter used in your titles, so that information can be extracted from the image titles and used in your database.
 
 ![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Dialog1.png?raw=True)
 
@@ -71,7 +71,7 @@ Example of successful segmentation of the pyramidal cell layer (as red line) of 
 
 Example of a colocalisation analysis between a dendritic (MAP2 in grey), a presynaptic (vGlut1 in red) and a postsynaptic marker (Shank1 in green) and their corresponding colocalisations (thresholded particles in red, found particles segmented in green).
 
-In experiment modus, the script will limit the number of rendered images and all measurements are run in the background. This will make the analysis much faster. After the analysis is done, you will find in your original folder a new folder called Particle Analysis that include a folder containing the saved region of interest (.roi files) to check on your segmentation outcome, as well as .tif file versions of your images after preprocessing. In the Output Table folder, you will find a SQlite database called Output.db with all the tables and measurements stored an ini.cfg file, that contain the defined parameters of your experiment.
+In experiment modus, the script will run all preprocessing and measurements steps in the background. This will make the analysis much faster. After the analysis is done, you will find in your original folder a new folder called Particle Analysis that includes a folder containing the saved region of interest (.roi files) to check on your segmentation outcome, as well as .tif file versions of your images after preprocessing. In the Output Table folder, you will find a SQlite database called Output.db with all the tables and measurements stored an ini.cfg file, that contain the defined parameters of your experiment.
 
 You will find four different tables in the database:
 - Particle_Analysis_Table containing information about every measurement performed
