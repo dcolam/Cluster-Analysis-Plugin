@@ -43,8 +43,9 @@ script:
 #- ls -l
 - mv $TRAVIS_BUILD_DIR/ExampleImage/Cluster_Analysis_travis_Tester.py $HOME/Fiji.app/plugins/
 - mv $TRAVIS_BUILD_DIR/sqlite-jdbc-3.21.0.jar $HOME/Fiji.app/plugins/
+- /Users/david/Fiji.app/Contents/MacOS/ImageJ-macosx --ij2 --headless --run /Users/david/Fiji.app/plugins/Cluster_Analysis/ImageJ2/Cluster_Analysis_BETA_v2.1.py 'expath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage",headless="True",measure="False"'
 #- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --headless $HOME/Fiji.app/plugins/Cluster_Analysis.py "/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"
-- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --ij2 --run $HOME/Fiji.app/plugins/Cluster_Analysis_travis_Tester.py 'filepath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
+#- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --ij2 --run $HOME/Fiji.app/plugins/Cluster_Analysis_travis_Tester.py 'filepath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
 #- $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --macro $HOME/Fiji.app/plugins/Cluster_Analysis.py 'file="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
 #- export DISPLAY=:1
 #- Xvfb $DISPLAY -auth /dev/null &
