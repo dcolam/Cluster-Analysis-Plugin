@@ -1,0 +1,12 @@
+matrix:
+  include:
+    - language: python
+      python: 2.7
+      before_install:
+        - export JYTHON_URL='http://downloads.sourceforge.net/project/jython/jython/2.5.2/jython_installer-2.5.2.jar'
+        - wget $JYTHON_URL -O jython_installer.jar; java -jar jython_installer.jar -s -d $HOME/jython; export PATH=$HOME/jython:$PATH;
+      before_script:
+        - $TRAVIS_BUILD_DIR/Cluster_Analysis/.travis/install_Fiji.sh
+
+      script:
+        - Test_Folder=/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage Fiji.app_Folder=/home/travis/build/dcolam/Fiji.app jython -m unittest ./Testsuits/tester.py

@@ -1,33 +1,26 @@
-language: python
-python:
-  - "2.7"
+language: java
+jdk: oraclejdk8
 sudo: required
 branches:
   only:
   - master
   - "/.*-[0-9]+\\..*/"
-
-env:
- - TEST_FOLDER=/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage FIJI_FOLDER=/home/travis/Fiji.app
-
+  
 before_script:
  - "export DISPLAY=:99.0"
  - "sh -e /etc/init.d/xvfb start"
 
-before_install:
- - export JYTHON_URL='http://downloads.sourceforge.net/project/jython/jython/2.5.2/jython_installer-2.5.2.jar'
- - wget $JYTHON_URL -O jython_installer.jar; java -jar jython_installer.jar -s -d $HOME/jython; export PATH=$HOME/jython:$PATH;
 install: true
-script:
+script: 
 #!/usr/bin/env sh
 - set -e
-
-# Define some variables
+ 
+# Define some variables 
 - export IJ_PATH="$HOME/Fiji.app"
 - export URL="http://sites.imagej.net/$UPDATE_SITE/"
 - export IJ_LAUNCHER="$IJ_PATH/ImageJ-linux64"
 - export PATH="$IJ_PATH:$PATH"
-
+ 
 # Install ImageJ
 - mkdir -p $IJ_PATH/
 - cd $HOME/
@@ -36,13 +29,12 @@ script:
 - cd $TRAVIS_BUILD_DIR/
 - sudo apt-get install realpath
 - realpath $TRAVIS_BUILD_DIR/ExampleImage
-- realpath $HOME/Fiji.app
 - mv $TRAVIS_BUILD_DIR/Cluster_Analysis/ $HOME/Fiji.app/plugins/
 - cd $HOME/Fiji.app/plugins/Cluster_Analysis/
 #- mv $TRAVIS_BUILD_DIR/ExampleImage/ini.cfg $HOME/Fiji.app/plugins/Cluster_Analysis
 - mv $TRAVIS_BUILD_DIR/sqlite-jdbc-3.21.0.jar $HOME/Fiji.app/plugins/
 - $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis/ImageJ2/Cluster_Analysis_BETA_v2.py 'expath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage",headless="True",measure="False"'
-- jython $TRAVIS_BUILD_DIR/Cluster_Analysis/Testsuits/tester.py
+-
 #- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --ij2 --run $HOME/Fiji.app/plugins/Cluster_Analysis_travis_Tester.py 'filepath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
 
 
