@@ -157,7 +157,7 @@ class TestTestParameters(unittest.TestCase):
         self.assertIsInstance(self.s, cab.SelectionManager)
 
     def test_filenames(self):
-        self.assertListEqual(self.d.filenames, [os.path.join(inipath, "/1a_CT12BL_Syt1_CA3_40x0.7_710.lsm"])
+        self.assertListEqual(self.d.filenames, [os.path.join(inipath, "1a_CT12BL_Syt1_CA3_40x0.7_710.lsm")])
 
     def test_Image(self):
         self.assertIsInstance(self.imp, cab.Image)
