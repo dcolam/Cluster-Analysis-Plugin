@@ -12,19 +12,23 @@ global output_path_dir
 global inipath
 global dir_path
 
-output_path_dir = inipath = "/Users/david/TestImage"
-dir_path = os.path.dirname(os.path.realpath('__file__'))
+output_path_dir = inipath = os.environ.get('Test_Folder')#"/Users/david/TestImage"
+dir_path = os.environ.get('Fiji.app_Folder') #os.path.dirname(os.path.realpath('__file__'))
 dirs = os.path.join(dir_path, "plugins", "Cluster_Analysis", "ImageJ2")
 
-
+print dir_path
 def initialize():
 
-    directories = ['/Users/david/Fiji.app/jars/bio-formats', '/Users/david/Fiji.app/jars/',
-                   '/Users/david/Fiji.app/plugins/']
+    #directories = ['/Users/david/Fiji.app/jars/bio-formats', '/Users/david/Fiji.app/jars/',
+     #              '/Users/david/Fiji.app/plugins/']
+
+    directories = [os.path.join(dir_path, "jars/bio-formats"), os.path.join(dir_path, "jars"),
+                   os.path.join(dir_path, "plugins")]
+
     for directory in directories:
         for jar in glob.glob(os.path.join(directory, '*.jar')):
             path.append(jar)
-    p = "/Users/david/Fiji.app/plugins/Cluster_Analysis/ImageJ2"
+    p = dirs
     path.append(p)
     print path
     if os.path.isfile(os.path.join(inipath, "ini.cfg")):
