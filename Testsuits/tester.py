@@ -30,9 +30,11 @@ def initialize():
             path.append(jar)
     p = dirs
     path.append(p)
-    print path
+    #print path
     if os.path.isfile(os.path.join(inipath, "ini.cfg")):
         os.remove(os.path.join(inipath, "ini.cfg"))
+    if os.path.isfile(os.path.join(dirs, "ini.cfg")):
+        os.remove(os.path.join(dirs, "ini.cfg"))
     if not os.path.isdir(output_path_dir):
         os.makedirs(output_path_dir)
     if not os.path.isdir(dirs):
@@ -145,7 +147,7 @@ class TestTestParameters(unittest.TestCase):
             imp = BF.openImagePlus(f)[0]
             # imp.show()
             cab.headless = False
-            self.imp = cab.Image(f, self.d, self.s, True)
+            self.imp = cab.Image(f, self.d, self.s, False)
 
     #def tearDown(self):
     #    tear_down_paths()
