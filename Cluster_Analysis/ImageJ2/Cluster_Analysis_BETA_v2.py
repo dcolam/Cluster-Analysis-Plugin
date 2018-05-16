@@ -31,27 +31,9 @@ def find(name, path):
             result.append(os.path.join(root, name))
     return result
 
-if measure:
-	IJ.run("Set Measurements...", "")
-else:
-	IJ.run("Set Measurements...", "area mean standard min integrated redirect=None decimal=3")
-expath2 = expath.getAbsolutePath()
-
-if not headless:
-	dir_path = os.path.dirname(os.path.realpath('__file__'))
-	dir_path = os.path.join(dir_path, "plugins", "Cluster_Analysis")
-else:
-	dir_path = os.path.realpath('__file__')
-	#print dir_path, os.path.dirname(os.path.realpath('__file__'))
-	dir_path = os.path.dirname(os.path.realpath('__file__'))
-	files = find("Cluster_Analysis_BETA_v2.py", dir_path)
-	for f in files:
-		if "ImageJ2" in f:
-			dir_path = os.path.dirname(f)
 	#dir_path = "/Users/david/Fiji.app"
 	#dir_path = os.path.join(dir_path, "plugins", "Cluster_Analysis")
 
-print dir_path
 
 class config(object):
 	"""
@@ -1623,7 +1605,11 @@ class Image(object):
 		self.dialoger = dialoger
 		self.group = [key for key, value in self.dialoger.groupedFiles.items() if self.path in value][0]
 		self.channels = self.dialoger.channels
-		self.imp = self.zStack(self.preimp)
+
+		if self.dialoger.zStack:
+			self.imp = self.zStack(self.preimp)
+		else:
+			self.imp = self.preimp
 		self.title = self.imp.getTitle()
 		self.ip = self.imp.getProcessor()
 
@@ -2002,14 +1988,33 @@ def gc():
 ####### Start of the script
 ##############################################################################################################
 
-#Read config-file
-cp = config()
-cp.readIni()
-
 #expath = "/Users/david/git/Cluster-Analysis-Plugin/ExampleImage"
 
-if __name__ in ['__builtin__', '__main__']: #, 'Cluster_Analysis_BETA']:
-	
+#if not headless:
+#	dir_path = os.path.dirname(os.path.realpath('__file__'))
+#	dir_path = os.path.join(dir_path, "plugins", "Cluster_Analysis")
+#else:
+dir_path = os.path.realpath('__file__')
+# print dir_path, os.path.dirname(os.path.realpath('__file__'))
+dir_path = os.path.dirname(os.path.realpath('__file__'))
+files = find("Cluster_Analysis_BETA_v2.py", dir_path)
+for f in files:
+	if "ImageJ2" in f:
+		dir_path = os.path.dirname(f)
+
+if __name__ in ['__builtin__', '__main__']:
+
+	#Set Measurements
+	if measure:
+		IJ.run("Set Measurements...", "")
+	else:
+		IJ.run("Set Measurements...", "area mean standard min integrated redirect=None decimal=3")
+	expath2 = expath.getAbsolutePath()
+
+	# Read config-file
+	cp = config()
+	cp.readIni()
+
 	IJ.run("Close All", "")
 	IJ.redirectErrorMessages(True)
 	memory = gc()
