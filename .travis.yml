@@ -42,7 +42,7 @@ script:
 #- mv $TRAVIS_BUILD_DIR/ExampleImage/ini.cfg $HOME/Fiji.app/plugins/Cluster_Analysis
 - mv $TRAVIS_BUILD_DIR/sqlite-jdbc-3.21.0.jar $HOME/Fiji.app/plugins/
 - $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis/ImageJ2/Cluster_Analysis_BETA_v2.py 'expath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage",headless="True",measure="False"'
-- jython $TRAVIS_BUILD_DIR/Cluster_Analysis/Testsuits/tester.py
+- jython $TRAVIS_BUILD_DIR/Testsuits/tester.py
 #- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --ij2 --run $HOME/Fiji.app/plugins/Cluster_Analysis_travis_Tester.py 'filepath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
 
 
