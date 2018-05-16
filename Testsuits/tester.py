@@ -12,7 +12,7 @@ global output_path_dir
 global inipath
 global dir_path
 
-output_path_dir = inipath = "/Users/david/git/Cluster-Analysis-Plugin/ExampleImage"
+output_path_dir = inipath = "/Users/david/TestImage"
 dir_path = os.path.dirname(os.path.realpath('__file__'))
 dirs = os.path.join(dir_path, "plugins", "Cluster_Analysis", "ImageJ2")
 
@@ -140,8 +140,8 @@ class TestTestParameters(unittest.TestCase):
         for i, f in enumerate(self.d.filenames):
             imp = BF.openImagePlus(f)[0]
             # imp.show()
-            cab.headless = True
-            self.imp = cab.Image(f, self.d, self.s, False)
+            cab.headless = False
+            self.imp = cab.Image(f, self.d, self.s, True)
 
     #def tearDown(self):
     #    tear_down_paths()
@@ -162,4 +162,4 @@ class TestTestParameters(unittest.TestCase):
 
 if __name__ in ['__builtin__', '__main__']:
     print "Hello"
-    #unittest.main()
+    unittest.main()
