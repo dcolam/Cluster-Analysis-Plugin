@@ -12,8 +12,8 @@ global output_path_dir
 global inipath
 global dir_path
 
-output_path_dir = inipath = os.environ.get('Test_Folder')#"/Users/david/TestImage"
-dir_path = os.environ.get('Fiji.app_Folder') #os.path.dirname(os.path.realpath('__file__'))
+output_path_dir = inipath = os.environ.get('TEST_FOLDER')#"/Users/david/TestImage"
+dir_path = os.environ.get('FIJI_FOLDER') #os.path.dirname(os.path.realpath('__file__'))
 dirs = os.path.join(dir_path, "plugins", "Cluster_Analysis", "ImageJ2")
 
 print dir_path
