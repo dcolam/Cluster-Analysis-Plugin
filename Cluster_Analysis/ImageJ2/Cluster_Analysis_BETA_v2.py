@@ -41,22 +41,22 @@ def find(name, path):
 
 class config(object):
     """
-	ConfigParser-handler object to read and write into the config-file
+    ConfigParser-handler object to read and write into the config-file
 
-	Default ini.cfg file in the FIJI-directory, a copy of the config-file will be stored in the Outputpath set by the user
-	which can be reused, using the ini.cfg-loader
-	"""
+    Default ini.cfg file in the FIJI-directory, a copy of the config-file will be stored in the Outputpath set by the user
+    which can be reused, using the ini.cfg-loader
+    """
 
     def __init__(self, testmode=False):
         """
-		Initiates a config-object, no args needed
+        Initiates a config-object, no args needed
 
-		iniPath = Default path in the FIJI-directory
-		newiniPath = Path to ini.cfp copy in the Outputpath
+        iniPath = Default path in the FIJI-directory
+        newiniPath = Path to ini.cfp copy in the Outputpath
 
-		section_dict = stores parameters in different sections
+        section_dict = stores parameters in different sections
 
-		"""
+        """
         self.cp = ConfigParser.ConfigParser()
         self.iniPath = os.path.join(dir_path, 'ini.cfg')
 
@@ -79,8 +79,8 @@ class config(object):
 
     def writeIni(self, default=False):
         """
-		Write into the ini.cfg file
-		"""
+        Write into the ini.cfg file
+        """
         if default:
             section_dict = self.section_dict_default
         else:
@@ -106,8 +106,8 @@ class config(object):
 
     def readIni(self, test=False, testPath=""):
         """
-		Retrieve information from ini.cfg file
-		"""
+        Retrieve information from ini.cfg file
+        """
         if not test:
             if self.iniPath == self.newiniPath:
                 self.cp.read(self.iniPath)
@@ -125,8 +125,8 @@ class config(object):
 
     def setDefault(self, testMode=False):
         """
-		Creates a Default ini.cfg file
-		"""
+        Creates a Default ini.cfg file
+        """
 
         section_dict = {"SelectionManager": {"manSel": "0", "autSel": "1"},
                         "ManualSelection": {"SelName": "Selection2", "SaveRoi": "True"},
@@ -186,14 +186,14 @@ class config(object):
 
 class db_interface(object):
     """
-	JCDB-driver Interface to communicate and write into a SQLite Database
-	"""
+    JCDB-driver Interface to communicate and write into a SQLite Database
+    """
 
     def __init__(self, db_path, image):
         """
-		Iniates an db_interface object using the title of the first image to retrieve database headers
-		Creates all SQLite strings templates
-		"""
+        Iniates an db_interface object using the title of the first image to retrieve database headers
+        Creates all SQLite strings templates
+        """
 
         self.image = image
         self.image_name = image.name
@@ -244,8 +244,8 @@ class db_interface(object):
 
     def describeFilename(self, image_name):
         """
-		Displays a Dialog so that the User can describe title segments to become DB-headers
-		"""
+        Displays a Dialog so that the User can describe title segments to become DB-headers
+        """
 
         descriptions = image_name.split(self.d.delimiter)
         l = eval(cp.cp.get("DB_Interface", "l"))
@@ -279,8 +279,8 @@ class db_interface(object):
 
     def getDescription(self):
         """
-		Insert get Description of the title and insert it into the SQLite command strings
-		"""
+        Insert get Description of the title and insert it into the SQLite command strings
+        """
 
         self.tc_MAIN_PA += ", ".join([x for x in self.descriptor_PA if x]) + ");"
         self.tc_MAIN_COLOC += ", ".join([x for x in self.descriptor_COLOC if x]) + ");"
@@ -316,8 +316,8 @@ class db_interface(object):
 
     def extractData(self, image, first=False):
         """
-		Extract Data from Image-object
-		"""
+        Extract Data from Image-object
+        """
 
         self.dbConn = self.getConnection()
         filename = image.name.split("_")
@@ -373,8 +373,8 @@ class db_interface(object):
 
     def coloc_extraction(self, c, description):
         """
-		Extract Colocaliation information
-		"""
+        Extract Colocaliation information
+        """
         l = []
 
         for k, v in c.items():
@@ -393,8 +393,8 @@ class db_interface(object):
 
     def createTables(self):
         """
-		Creates Tables in DB-file
-		"""
+        Creates Tables in DB-file
+        """
         self.dbConn = self.getConnection()
         stmt = self.dbConn.createStatement()
         try:
@@ -424,8 +424,8 @@ class db_interface(object):
 
     def getConnection(self):
         """
-		Get Connection to DB and returns connection handler
-		"""
+        Get Connection to DB and returns connection handler
+        """
 
         config = SQLiteConfig()
         config.enforceForeignKeys(True)
@@ -445,8 +445,8 @@ class db_interface(object):
 
     def createPATable(self, keys, paOrColoc):
         """
-		Creates Particle Analysis Tables
-		"""
+        Creates Particle Analysis Tables
+        """
         if paOrColoc == "pa":
             record_insertor = self.record_insertor_SUB_PA
             storedData = self.storePA
@@ -483,8 +483,8 @@ class db_interface(object):
 
     def populateTable(self, paOrColoc):
         """
-		Populate Tables with Data, either for PA or Coloc
-		"""
+        Populate Tables with Data, either for PA or Coloc
+        """
 
         def is_number(s):
             try:
@@ -682,8 +682,7 @@ class Selection(object):
         if self.typeSel == "automatic":
             self.selectAreaAuto()
             attr = vars(self)
-
-    # print ', \n'.join("%s: %s" % item for item in attr.items())
+        # print ', \n'.join("%s: %s" % item for item in attr.items())
 
     def setImage(self, image):
         self.imp = image.imp
@@ -1074,8 +1073,7 @@ class Dialoger(object):
 
         for i in self.channels:
             attr = vars(i)
-
-    # print ', '.join("%s: %s" % item for item in attr.items())
+        # print ', '.join("%s: %s" % item for item in attr.items())
 
     def loadfilenames(self):
         filenames = []
@@ -1678,7 +1676,7 @@ class Image(object):
                                          enumerate(zip(self.channels[n].list_1whichChannel, subs)) if x]
                             roiPath = self.output_path.replace(os.path.splitext(self.output_path)[1], "_")
 
-            # print partRois
+                # print partRois
         IJ.saveAsTiff(self.imp, self.output_path)
 
         # for p in partRois:
@@ -1985,9 +1983,8 @@ class ParticleAnalyser(object):
                         inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" +
                         self.tp["Roi Name"] + "_" + self.sliceName + "_Failed")
                     flatIn.show()
-
-            # colocMask.show()
-            # WaitForUserDialog("Hallo").show()
+                # colocMask.show()
+                # WaitForUserDialog("Hallo").show()
 
             IJ.redirectErrorMessages(True)
             sub_title = self.sub.getTitle()
