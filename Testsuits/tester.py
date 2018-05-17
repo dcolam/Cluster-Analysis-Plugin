@@ -166,6 +166,10 @@ class TestTestParameters(unittest.TestCase):
         for p in self.imp.pas:
             self.assertIsInstance(p, cab.ParticleAnalyser)
 
+    def test_DB_Handler(self):
+        self.db = cab.db_interface(inipath, self.imp)
+        self.assertIsInstance(self.db, cab.db_interface)
+
 if __name__ in ['__builtin__', '__main__']:
     print "Hello"
     unittest.main()
