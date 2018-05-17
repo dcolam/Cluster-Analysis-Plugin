@@ -153,30 +153,25 @@ class TestTestParameters(unittest.TestCase):
     #def tearDown(self):
     #    tear_down_paths()
 
-    def test_startScript(self):
-        self.assertIsInstance(self.d, cab.Dialoger)
-        self.assertIsInstance(self.s, cab.SelectionManager)
-
     def test_filenames(self):
         self.assertListEqual(self.d.filenames, [os.path.join(inipath, "1a_CT12BL_Syt1_CA3_40x0.7_710.lsm")])
 
-    def test_Image(self):
+    def test_Instances(self):
         self.assertIsInstance(self.imp, cab.Image)
-
-    def test_ParticleAnalyser(self):
+        self.assertIsInstance(self.d, cab.Dialoger)
+        self.assertIsInstance(self.s, cab.SelectionManager)
         for p in self.imp.pas:
             self.assertIsInstance(p, cab.ParticleAnalyser)
-
-    def test_DB_Handler(self):
         self.assertIsInstance(self.db, cab.db_interface)
+        for c in self.imp.channels:
+            self.assertIsInstance(c, cab.Channel)
+        self.assertTrue(len(self.imp.channels)==4)
 
-    def test_OutputDB_IsPresent(self):
-        self.assertTrue(os.path.isfile(self.db.db_path))
-
-    def test_DB_writeCSV(self):
+    def test_DB_Outputdb_CSV(self):
         self.db.writeCSV()
         pathCSV = os.path.join(os.path.dirname(self.db.db_path), "Particle_Analysis_Table.csv")
         self.assertTrue(os.path.isfile(pathCSV))
+        self.assertTrue(os.path.isfile(self.db.db_path))
 
 if __name__ in ['__builtin__', '__main__']:
     unittest.main()
