@@ -31,9 +31,9 @@ def initialize():
     p = dirs
     path.append(p)
 
-    #for p in path:
-     #   if "jdbc" in p:
-      #      print p
+    for p in path:
+        if "jdbc" in p:
+            print p
     #print path
     if os.path.isfile(os.path.join(inipath, "ini.cfg")):
         os.remove(os.path.join(inipath, "ini.cfg"))
