@@ -20,11 +20,9 @@ from loci.plugins import BF
 from ij.measure import ResultsTable, Calibration
 
 import org.scijava.command.Command
-
-
-# @File(label = "Select an input folder with the images to analyze", value=expath, required=true, style="directory", persist=true) expath
-# @Boolean(label="Headless?", value=True) headless
-# @Boolean(label="Set Measurements", value=True) measure
+#@File(label = "Select an input folder with the images to analyze", value=expath, required=true, style="directory", persist=true) expath
+#@Boolean(label="Headless?", value=True) headless
+#@Boolean(label="Set Measurements", value=True) measure
 
 def find(name, path):
     result = []
@@ -1732,13 +1730,13 @@ class Image(object):
     # self.imp.show()
     # WaitForUserDialog("Please, set your threshold").show()
 
-    # @LegacyService legacy
-    # @ImageJ ij
-    # @UIService ui
-    # @OUTPUT Dataset output
-    # @OUTPUT ImgPlus outimp
-    # @OpService ops
-    # @DatasetService ds
+    #@LegacyService legacy
+    #@ImageJ ij
+    #@UIService ui
+    #@OUTPUT Dataset output
+    #@OUTPUT ImgPlus outimp
+    #@OpService ops
+    #@DatasetService ds
 
     def zStack(self, imp, projected_dimension="Z"):
         from net.imagej.axis import Axes
