@@ -148,6 +148,7 @@ class TestTestParameters(unittest.TestCase):
             # imp.show()
             cab.headless = True
             self.imp = cab.Image(f, self.d, self.s, False)
+        self.db = cab.db_interface(inipath, self.imp)
 
     #def tearDown(self):
     #    tear_down_paths()
@@ -167,8 +168,15 @@ class TestTestParameters(unittest.TestCase):
             self.assertIsInstance(p, cab.ParticleAnalyser)
 
     def test_DB_Handler(self):
-        self.db = cab.db_interface(inipath, self.imp)
         self.assertIsInstance(self.db, cab.db_interface)
+
+    def test_OutputDB_IsPresent(self):
+        self.assertTrue(os.path.isfile(self.db.db_path))
+
+    def test_DB_writeCSV(self):
+        self.db.writeCSV()
+        pathCSV = os.path.join(os.path.dirname(self.db.db_path), "Particle_Analysis_Table.csv")
+        self.assertTrue(os.path.isfile(pathCSV))
 
 if __name__ in ['__builtin__', '__main__']:
     unittest.main()
