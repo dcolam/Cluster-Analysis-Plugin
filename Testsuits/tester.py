@@ -30,6 +30,10 @@ def initialize():
             path.append(jar)
     p = dirs
     path.append(p)
+
+    #for p in path:
+     #   if "jdbc" in p:
+      #      print p
     #print path
     if os.path.isfile(os.path.join(inipath, "ini.cfg")):
         os.remove(os.path.join(inipath, "ini.cfg"))
@@ -146,7 +150,7 @@ class TestTestParameters(unittest.TestCase):
         for i, f in enumerate(self.d.filenames):
             imp = BF.openImagePlus(f)[0]
             # imp.show()
-            cab.headless = False
+            cab.headless = True
             self.imp = cab.Image(f, self.d, self.s, False)
 
     #def tearDown(self):
