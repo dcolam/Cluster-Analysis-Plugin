@@ -31,10 +31,6 @@ def initialize():
     p = dirs
     path.append(p)
 
-    for p in path:
-        if "jdbc" in p:
-            print p
-    #print path
     if os.path.isfile(os.path.join(inipath, "ini.cfg")):
         os.remove(os.path.join(inipath, "ini.cfg"))
     if os.path.isfile(os.path.join(dirs, "ini.cfg")):
@@ -175,5 +171,4 @@ class TestTestParameters(unittest.TestCase):
         self.assertIsInstance(self.db, cab.db_interface)
 
 if __name__ in ['__builtin__', '__main__']:
-    print "Hello"
     unittest.main()
