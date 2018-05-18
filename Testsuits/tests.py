@@ -47,6 +47,16 @@ def initialize():
     #from net.imagej.ops import Ops
     #from net.imagej import legacy
 
+    #from net.imagej.legacy import LegacyService
+    #from net.imagej import ImageJ
+    ##from org.scijava.ui import DefaultUIService
+    #from net.imagej.ops import DefaultOpService
+    #from io.scif.services import SCIFIODatasetService
+
+    #global legacy
+
+    #legacy = LegacyService.getInstance()
+
     if not os.path.isdir(cab.dir_path):
         os.makedirs(cab.dir_path)
 
@@ -59,6 +69,7 @@ def set_up_params(inipath, test=True, initialized=False):
     cab.headless = True
     cab.expath2 = inipath
     cab.expath = inipath
+    cab.measure = False
 
     t = cab.testParameters()
     cab.cp = cab.config(False)

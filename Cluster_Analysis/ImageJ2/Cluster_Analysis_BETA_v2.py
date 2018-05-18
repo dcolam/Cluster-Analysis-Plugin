@@ -24,6 +24,8 @@ import org.scijava.command.Command
 #@Boolean(label="Headless?", value=True) headless
 #@Boolean(label="Set Measurements", value=True) measure
 
+
+
 def find(name, path):
     result = []
     for root, dirs, files in os.walk(path):
@@ -1264,7 +1266,7 @@ class Dialoger(object):
             self.input_path_dir = expath2
             self.zStack = zStackBool
             self.ext = ext
-            self.overwriteDB = False
+            self.overwriteDB = True
 
             cnames = [c1Name, c2Name, c3Name, c3Name]
             backgrounds = [backgroundRadc1, backgroundRadc2, backgroundRadc3, backgroundRadc4]
@@ -1739,33 +1741,38 @@ class Image(object):
 #@DatasetService ds
 
     def zStack(self, imp, projected_dimension="Z"):
-        from net.imagej.axis import Axes
-        from net.imagej.ops import Ops
-
-
-        disp = legacy.getImageMap().registerLegacyImage(imp)
-        data = disp.get(0).getData()
-        projection_type = "Max"
-        dim = data.dimensionIndex(getattr(Axes, projected_dimension))
-        if dim == -1:
-            raise Exception("%s dimension not found." % projected_dimension)
-        if data.dimension(dim) < 2:
-            raise Exception("%s dimension has only one frame." % projected_dimension)
-        new_dimensions = [data.dimension(d) for d in range(0, data.numDimensions()) if d != dim]
-        projected = ops.create().img(new_dimensions)
-        proj_op = ops.op(getattr(Ops.Stats, projection_type), data)
-        ops.transform().project(projected, data, proj_op, dim)
-        output = ds.create(projected)
-        disp = ij.display().createDisplayQuietly(output)
-        outimp = legacy.getImageMap().registerDisplay(disp)
-        outimp.copyAttributes(self.preimp)
-        imp2 = hyr.reorderHyperstack(outimp, 2, 1, 0, True, False)
-        outimp.close()
-        self.preimp.close()
-        depth = imp.getProcessor().getBitDepth()
-        IJ.run(imp2, "%s-bit" % depth, "")
-        imp2.setDisplayMode(IJ.COLOR)
-        return imp2
+		from net.imagej.axis import Axes
+		from net.imagej.ops import Ops
+		
+		print legacy
+		print ij
+		print ui
+		print ops
+		print ds
+		
+		disp = legacy.getImageMap().registerLegacyImage(imp)
+		data = disp.get(0).getData()
+		projection_type = "Max"
+		dim = data.dimensionIndex(getattr(Axes, projected_dimension))
+		if dim == -1:
+		    raise Exception("%s dimension not found." % projected_dimension)
+		if data.dimension(dim) < 2:
+		    raise Exception("%s dimension has only one frame." % projected_dimension)
+		new_dimensions = [data.dimension(d) for d in range(0, data.numDimensions()) if d != dim]
+		projected = ops.create().img(new_dimensions)
+		proj_op = ops.op(getattr(Ops.Stats, projection_type), data)
+		ops.transform().project(projected, data, proj_op, dim)
+		output = ds.create(projected)
+		disp = ij.display().createDisplayQuietly(output)
+		outimp = legacy.getImageMap().registerDisplay(disp)
+		outimp.copyAttributes(self.preimp)
+		imp2 = hyr.reorderHyperstack(outimp, 2, 1, 0, True, False)
+		outimp.close()
+		self.preimp.close()
+		depth = imp.getProcessor().getBitDepth()
+		IJ.run(imp2, "%s-bit" % depth, "")
+		imp2.setDisplayMode(IJ.COLOR)
+		return imp2
 
 
 #ParticleAnalysis manager that performs Particle and Colocalisation Analysis on images and stores the right informations
