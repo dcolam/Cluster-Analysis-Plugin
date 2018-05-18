@@ -1730,17 +1730,19 @@ class Image(object):
     # self.imp.show()
     # WaitForUserDialog("Please, set your threshold").show()
 
-    #@LegacyService legacy
-    #@ImageJ ij
-    #@UIService ui
-    #@OUTPUT Dataset output
-    #@OUTPUT ImgPlus outimp
-    #@OpService ops
-    #@DatasetService ds
+#@LegacyService legacy
+#@ImageJ ij
+#@UIService ui
+#@OUTPUT Dataset output
+#@OUTPUT ImgPlus outimp
+#@OpService ops
+#@DatasetService ds
 
     def zStack(self, imp, projected_dimension="Z"):
         from net.imagej.axis import Axes
         from net.imagej.ops import Ops
+
+
         disp = legacy.getImageMap().registerLegacyImage(imp)
         data = disp.get(0).getData()
         projection_type = "Max"
@@ -1766,7 +1768,7 @@ class Image(object):
         return imp2
 
 
-# ParticleAnalysis manager that performs Particle and Colocalisation Analysis on images and stores the right informations
+#ParticleAnalysis manager that performs Particle and Colocalisation Analysis on images and stores the right informations
 class ParticleAnalyser(object):
     def __init__(self, sub, channel, show, roi_name):
         self.roi_name = roi_name
