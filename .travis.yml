@@ -8,7 +8,7 @@ branches:
   - "/.*-[0-9]+\\..*/"
 
 env:
- - TEST_FOLDER=/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage FIJI_FOLDER=/home/travis/Fiji.app
+ - TEST_FOLDER=/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage FIJI_FOLDER=/home/travis/Fiji.app JAVA_OPTS=-Xmx2g
 
 before_script:
  - "export DISPLAY=:99.0"
