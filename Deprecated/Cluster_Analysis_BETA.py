@@ -9,23 +9,27 @@ from loci.plugins.util import WindowTools as wt
 from java.sql import DriverManager, SQLException, Types, Statement
 from ij.gui import GenericDialog, WaitForUserDialog, Roi
 from ij.process import ImageProcessor, AutoThresholder
-from ij.plugin import ChannelSplitter, ImageCalculator, RGBStackMerge, ZProjector, Duplicator, StackEditor
+from ij.plugin import ChannelSplitter, ImageCalculator, RGBStackMerge, ZProjector, Duplicator, StackEditor, Concatenator
 from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM, ParticleAnalyzer
 from ij.measure import Measurements as ms
 from loci.plugins import BF
 from ij.measure import ResultsTable
-headless = False
+#@File(label = "Select an input folder with the images to analyze", value=expath, required=true, style="directory", persist=true) expath
 
+headless = False
+dir_path = os.path.dirname(os.path.realpath('__file__'))
+dir_path = os.path.join(dir_path, "plugins", "Cluster_Analysis")
 
 class config(object):
 	"""
 	ConfigParser-handler object to read and write into the config-file
 
 	Default ini.cfg file in the FIJI-directory, a copy of the config-file will be stored in the Outputpath set by the user
+	which can be reused, using the ini.cfg-loader
 	"""
 		
-	def __init__(self):
+	def __init__(self, testmode=False):
 		"""
 		Initiates a config-object, no args needed
 		
@@ -37,17 +41,17 @@ class config(object):
 		"""
 		self.cp = ConfigParser.ConfigParser()
 		self.iniPath = os.path.join(dir_path, 'ini.cfg')
-		
-		if not os.path.isfile(self.iniPath): #initiates a config-file if it doesnt exist yet in the FIJI-path
-			self.setDefault()
-			self.cp.read(self.iniPath)
-			self.newiniPath = self.iniPath
-			
-		else:
-			self.cp.read(self.iniPath)
-			self.newiniPath = os.path.join(self.cp.get("ChannelOptions", "expath"), "Particle_Analysis", "Output_Table",
-										   "ini.cfg")
 
+		if not testmode:
+			if not os.path.isfile(self.iniPath): #initiates a config-file if it doesnt exist yet in the FIJI-path
+				self.setDefault()
+				self.cp.read(self.iniPath)
+				self.newiniPath = self.iniPath
+				
+			else:
+				self.cp.read(self.iniPath)
+				self.newiniPath = os.path.join(self.cp.get("ChannelOptions", "expath"), "Particle_Analysis", "Output_Table",
+											   "ini.cfg")
 		self.section_dict = {}
 		self.section_dict_old = {}
 
@@ -58,7 +62,6 @@ class config(object):
 		"""
 		Write into the ini.cfg file
 		"""
-		
 		if default:
 			section_dict = self.section_dict_default
 		else:
@@ -82,14 +85,18 @@ class config(object):
 			with open(self.iniPath, "wb") as configfile:
 				self.cp.write(configfile)
 
-	def readIni(self):
+	def readIni(self, test=False, testPath=""):
 		"""
 		Retrieve information from ini.cfg file
 		"""
-		if self.iniPath == self.newiniPath:
-			self.cp.read(self.iniPath)
-		else:
-			self.cp.read(self.newiniPath)
+		if not test:
+			if self.iniPath == self.newiniPath:
+				self.cp.read(self.iniPath)
+			else:
+				self.cp.read(self.newiniPath)
+		elif testPath:
+			print "Read ini-file in testmode..."
+			self.cp.read(testPath)
 
 		for each_section in self.cp.sections():
 			vars_dict = {}
@@ -97,7 +104,7 @@ class config(object):
 				vars_dict[each_key] = each_val
 			self.section_dict_old[each_section] = vars_dict
 
-	def setDefault(self):
+	def setDefault(self, testMode=False):
 		"""
 		Creates a Default ini.cfg file
 		"""
@@ -152,7 +159,9 @@ class config(object):
 						"DB_Interface": {"l": '["InternalID", "Timepoint", "Gene", "Region", "", "", "", "", "", "", "", "", "", "", ""]'}}
 
 		self.section_dict_default = section_dict
-		self.writeIni(default=True)
+
+		if not testMode:
+			self.writeIni(default=True)
 
 
 class db_interface(object):
@@ -378,15 +387,15 @@ class db_interface(object):
 			if self.populateTable("pa"):
 				print "Particle Analysis Data inserted successfully"
 			else:
-				print "Particle Analysis Data Insertion unsuccessful"
+				print "Particle Analysis Data Insertion failed!!"
 
 		if self.coloc:
 			if self.populateTable("coloc"):
 				print "Colocalisation Data inserted successfully"
 			else:
-				print "Colocalisation Data Insertion unsuccessful"
+				print "Colocalisation Data Insertion failed!!"
 
-		print "done"
+		print "*****************************************************"
 
 	def getConnection(self):
 		"""
@@ -416,9 +425,9 @@ class db_interface(object):
 		if paOrColoc == "pa":
 			record_insertor = self.record_insertor_SUB_PA
 			storedData = self.storePA 
-			print "Stored Data, ", len(storedData)
-			print "Nr of PKs, ", len(keys)
-			print keys
+			print "Number of entries: ", len(storedData)
+			#print "Nr of PKs, ", len(keys)
+			#print keys
 		if paOrColoc == "coloc":
 			record_insertor = self.record_insertor_SUB_COLOC
 			storedData = self.storeColoc 
@@ -616,7 +625,7 @@ class Selection(object):
 		self.area = 0
 		self.mask = ''
 		self.path = ''
-		print self.path
+		#print self.path
 		if self.typeSel == "manual":
 			self.getOptions()
 
@@ -645,7 +654,7 @@ class Selection(object):
 		if self.typeSel == "automatic":
 			self.selectAreaAuto()
 			attr = vars(self)
-			print ', '.join("%s: %s" % item for item in attr.items())
+			#print ', \n'.join("%s: %s" % item for item in attr.items())
 
 
 	def setImage(self, image):
@@ -972,13 +981,13 @@ class Dialoger(object):
 
 		for j in self.channels:
 			if any(j.list_1whichChannel):
-				print j.list_1whichChannel
+				#print j.list_1whichChannel
 				[self.getParticleAnalyzerOptions(i, "coloc") for i, x in enumerate(j.list_1whichChannel) if
 				 not self.channels[i].pa and x]
 
 		for i in self.channels:
 			attr = vars(i)
-			print ', '.join("%s: %s" % item for item in attr.items())
+			#print ', '.join("%s: %s" % item for item in attr.items())
 
 	def loadfilenames(self):
 		filenames = []
@@ -1014,7 +1023,7 @@ class Dialoger(object):
 
 	def getOptions(self):
 		section = "ChannelOptions"
-		expath = cp.cp.get(section, "expath")
+		#expath = cp.cp.get(section, "expath")
 		ext = cp.cp.get(section, "ext")
 		delimiter = cp.cp.get(section, "delimiter")
 		zStackBool = cp.cp.getboolean(section, "zStackBool")
@@ -1042,8 +1051,7 @@ class Dialoger(object):
 
 		if not headless:
 			gd = GenericDialog("Options")
-			gd.addStringField("Input Folder", expath,
-							  75) 
+			gd.addMessage("Input Folder: %s"% expath) 
 			gd.addCheckboxGroup(1, 2, ["Z-project?", "Overwrite old database if it already exists?"],
 								[zStackBool, True]) 
 			gd.addStringField("File extension", ext, 10)
@@ -1087,17 +1095,20 @@ class Dialoger(object):
 			gd.addMessage("_________________________________________________________________________________")
 			gd.addCheckbox("Test parameters on random pictures?", testBool) 
 			wt.addScrollBars(gd)
-			print gd.getPreferredSize(), gd.getSize()
-
+			#print gd.getPreferredSize(), gd.getSize()
 			gd.showDialog()
-			print gd.getPreferredSize(), gd.getSize()
+			#print gd.getPreferredSize(), gd.getSize()
 
-			print gd.getPreferredSize(), gd.getSize()
+			#print gd.getPreferredSize(), gd.getSize()
 			if gd.wasCanceled():
 				print "User canceled dialog!"
 				sys.exit("Analysis was cancelled")
 
-			input_path_dir = expath = gd.getNextString()
+			if isinstance(expath, str):
+				input_path_dir = expath
+			else:
+				input_path_dir = expath.getAbsolutePath() #= gd.getNextString()
+
 			zStack = zStackBool = gd.getNextBoolean()
 			ext = gd.getNextString()
 			delimiter = gd.getNextString()
@@ -1236,7 +1247,7 @@ class Dialoger(object):
 		addMeth2 = cp.cp.get(section, "addMeth2")
 		watershed2 = cp.cp.getboolean(section, "watershed2")
 
-		print channel_number
+		#print channel_number
 		if not headless:
 
 			if coloc == "coloc":
@@ -1440,14 +1451,19 @@ class testParameters(object):
 		self.d = Dialoger()
 		self.s = SelectionManager()
 		cp.writeIni()
+		cp.readIni()
 		if self.d.test:
 			filepath = random.choice(self.d.filenames)
+			print "*****************************************************"
+			print "Testing Parameters on image: %s \n" %os.path.split(filepath)[1]
 			l = Image(filepath, self.d, self.s, True)
 			self.stitch()
 			self.dialog()
 			while self.another:
 				IJ.run("Close All")
 				filepath = random.choice(self.d.filenames)
+				print "*****************************************************"
+				print "Testing Parameters on image: %s \n" %os.path.split(filepath)[1]
 				l = Image(filepath, self.d, self.s, True)
 				self.stitch()
 				self.dialog()
@@ -1461,10 +1477,30 @@ class testParameters(object):
 		else:
 			return self.d, self.s
 
+	#def stitch(self):
+#		if WindowManager.getImageCount() > 1:
+#			IJ.run("Images to Stack", "name=Stack title=[] use")
+#		stack = IJ.getImage()
+#		WaitForUserDialog("Inspect results and then click okay").show()
+#		stack.close()
+#		return
+
 	def stitch(self):
 		if WindowManager.getImageCount() > 1:
-			IJ.run("Images to Stack", "name=Stack title=[] use")
-		stack = IJ.getImage()
+			#print "Stacking"
+			#IJ.run("Images to Stack", "name=Stack title=[] use")
+			
+			titles = WindowManager.getImageTitles()
+			imps = [WindowManager.getImage(i) for i in titles]
+			#imps = [IJ.run(i, "8-bit Color", "number=256") for i in imps]
+			stack = Concatenator().concatenate(imps, False)
+			#stack = RGBStackMerge().mergeChannels(imps, False)
+			stack.show()
+			for i,t in enumerate(titles):
+				IJ.run("Set Label...", "label=]%s"%t)
+				IJ.run(stack, "Next Slice [>]", "")	
+			stack.setC(1)
+		#stack = IJ.getImage()
 		WaitForUserDialog("Inspect results and then click okay").show()
 		stack.close()
 		return
@@ -1638,15 +1674,20 @@ class ParticleAnalyser(object):
 				imp2.setProcessor(ip)
 			min_thresh = ip.getMaxThreshold()
 			max_thresh = ip.getMinThreshold()
-			print (m, min_thresh, max_thresh)
+			print "______________________________________________"
+			print "Measurement of %s" %self.roi_name
+			print "Threshold Method: %s, Max: %s, Min: %s" %(m, min_thresh, max_thresh)
 			if self.show:
 				imp2.show()
-
+				WaitForUserDialog("1").show()
+			RM = RoiManager.getInstance()
+			RM.reset()
+			
 			self.pa_show = "Masks"
 			IJ.run(imp2, "Analyze Particles...", "size=%s-%s circularity=%s-%s show=%s display add clear summarize" % (
 				self.channel.lowerSize, self.channel.higherSize, self.channel.circ1, self.channel.circ2, self.pa_show))
 
-			RM = RoiManager.getInstance()
+			
 			RM.runCommand(imp2,"Show All without labels")
 			#rois = RM.getRoisAsArray()
 			#roisIndex = []
@@ -1656,6 +1697,7 @@ class ParticleAnalyser(object):
 			#RM.runCommand(imp2,"Combine")
 
 			mask = IJ.getImage()
+			#WaitForUserDialog("1").show()
 			mask.hide()
 			IJ.run(mask, "Create Selection", "")
 			
@@ -1663,6 +1705,7 @@ class ParticleAnalyser(object):
 			if self.show:
 				if self.new_roi:
 					imp2.setRoi(self.new_roi)
+					#WaitForUserDialog("2").show()
 					IJ.run(imp2, "Properties... ", "  stroke=Green")
 					flat = imp2.flatten()
 					flat.copyAttributes(self.sub)
@@ -1673,10 +1716,14 @@ class ParticleAnalyser(object):
 					flat2.show()
 					imp2.close()
 				else:
+					print "No particles found"
+					#WaitForUserDialog("2").show()
 					imp2.setRoi(self.roi)
 					IJ.run(imp2, "Properties... ", " width=2  stroke=Red")
 					flat = imp2.flatten()
+					flat.setTitle("Binary-%s-%s-%s" % (self.channel.channel_name, self.roi.getName(), m))
 					flat.show()
+					#WaitForUserDialog("2").show()
 					imp2.close()
 
 			tp = IJ.getTextPanel()
@@ -1695,19 +1742,23 @@ class ParticleAnalyser(object):
 			binary.setRoi(self.new_roi)
 			IJ.run(binary, "Properties... ", "  stroke=Red")
 			flatIn = binary.flatten()
-			flatIn.copyAttributes(binary)
+			#flatIn.copyAttributes(binary)
 			IJ.run(colocMask, "Create Selection", '')
 			flatRoi = colocMask.getRoi()
 			if flatRoi:
 				flatIn.setRoi(flatRoi)
 				IJ.run(flatIn, "Properties... ", "  stroke=Green")
 				flat2 = flatIn.flatten()
+				#flat2.copyAttributes(flatIn)
 				flatIn.close()
 				flat2.setTitle(inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + self.tp["Roi Name"])
 				flat2.show()
 			else:
-				flatIn.setTitle(inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + self.tp["Roi Name"])
+				print "No %s Coloc Particles found" %inorout
+				flatIn.setTitle(inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + self.tp["Roi Name"] +"_Failed")
 				flatIn.show()
+				#colocMask.show()
+				#WaitForUserDialog("Hallo").show()
 			
 		IJ.redirectErrorMessages(True)
 		sub_title = self.sub.getTitle()
@@ -1740,32 +1791,33 @@ class ParticleAnalyser(object):
 		if channel2.watershed:
 			new_roi, mask = self.watershed(binary, ip)
 			mask.setRoi(self.new_roi)
-			if new_roi:
+			if new_roi and self.new_roi:
 				IJ.run(mask, "Clear Outside", "slice")
 				IJ.run(mask, "Create Selection", '')
 				mask_roi = mask.getRoi()
 				binary.setRoi(mask_roi)
-
 		else:
 			binary.setRoi(self.new_roi)
 
 		if self.new_roi:
 			if self.channel.pa_inside:
+				#print "Inside Coloc"
 				paString = "size=%s-%s circularity=%s-%s show=%s display clear summarize" % (sizeMin, sizeMax, circ1, circ2, self.pa_show)
 				colocMaskIn, tp_stringIn, areaIn = self.colocPA("Inside", binary, paString)
 				self.tp_colocIn["Inside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(index)] = [tp_stringIn, areaIn]
-	
 				if self.show:
 					flatShow(colocMaskIn, "Inside")
 				colocMaskIn.close()
 			if self.channel.pa_outside:
+				#print "Outside Coloc"
 				paString = "size=%s-%s circularity=%s-%s show=%s display exclude clear summarize" % (sizeMin, sizeMax, circ1, circ2, self.pa_show)
 				colocMaskOut, tp_stringOut, areaOut = self.colocPA("Outside", binary, paString)
 				self.tp_colocOut["Outside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(index)] = [tp_stringOut, areaOut]
 				if self.show:
 					flatShow(colocMaskOut, "Outside")
 				colocMaskOut.close()
-
+		#else:
+			
 		binary.close()
 
 	def colocPA(self, inorout, binary, paString):
@@ -1800,69 +1852,72 @@ def gc():
 ##############################################################################################################
 
 #Read config-file
-dir_path = os.path.dirname(os.path.realpath('__file__'))
 cp = config()
 cp.readIni()
 
-IJ.run("Close All", "")
-IJ.redirectErrorMessages(True)
-memory = gc()
-print "Current Memory", memory
+#expath = "/Users/david/git/Cluster-Analysis-Plugin/ExampleImage"
 
-IJ.setDebugMode(False)
-IJ.resetEscape()
-
-#Gather Parameters for the analysis
-t = testParameters()
-d, s = t.startScript()
-
-errors = []
-start = time.time()
-
-#Loop over images
-for index, i in enumerate(d.filenames):
-	if not IJ.escapePressed():
-		try:
-			print "Analysing image: ", os.path.split(i)[1]
-			#Image gets analyzed
-			l = Image(i, d, s, False)
-			if index == 0:
-				db_path = d.output_path_dict["output_table_path"]
-				#initiate database after first image
-				db = db_interface(db_path, l)
-				if not headless:
-					#write new parameters into new config-file
-					cp.writeIni()
-			else:
-				#store information into the database
-				db.extractData(l)
-			if index % 10 == 0:
-				print "Current Memory", gc()
-		#Try-catch statement so that analysis is not interrupted
-		except:
-			exc_type, exc_value, exc_traceback = sys.exc_info()
-			lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-			print ''.join('!! ' + line for line in lines)
-			print "Analysis of image %s failed" % os.path.split(i)[1]
-			errors.append(i)
-			IJ.run("Close All")
-			l = None
-db.writeCSV()
-db.closeConn()
-
-if not headless:
-	WaitForUserDialog(
-		"Analysis is done! \n Number of images analyzed: %s \n Running time: %s \n Number of failed images: %s"
-		% (len(d.filenames),
-		   (time.time() - start),
-		   len(errors))).show()
-
-print "Number of images analyzed: ", len(d.filenames)
-
-print 'It took', time.time() - start, 'seconds.'
-
-for e in errors:
-	print "Failed Images: ", e
-
-if headless:
-	sys.exit(0)
+if __name__ in ['__builtin__', '__main__']: #, 'Cluster_Analysis_BETA']:
+	
+	IJ.run("Close All", "")
+	IJ.redirectErrorMessages(True)
+	memory = gc()
+	print "Current Memory", memory
+	
+	IJ.setDebugMode(False)
+	IJ.resetEscape()
+	
+	#Gather Parameters for the analysis
+	t = testParameters()
+	d, s = t.startScript()
+	
+	errors = []
+	start = time.time()
+	
+	#Loop over images
+	for index, i in enumerate(d.filenames):
+		if not IJ.escapePressed():
+			try:
+				print "Analysing image: ", os.path.split(i)[1]
+				#Image gets analyzed
+				l = Image(i, d, s, False)
+				if index == 0:
+					db_path = d.output_path_dict["output_table_path"]
+					#initiate database after first image
+					db = db_interface(db_path, l)
+					if not headless:
+						#write new parameters into new config-file
+						cp.writeIni()
+				else:
+					#store information into the database
+					db.extractData(l)
+				if index % 10 == 0:
+					print "Current Memory", gc()
+			#Try-catch statement so that analysis is not interrupted
+			except:
+				exc_type, exc_value, exc_traceback = sys.exc_info()
+				lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
+				print ''.join('!! ' + line for line in lines)
+				print "Analysis of image %s failed" % os.path.split(i)[1]
+				errors.append(i)
+				IJ.run("Close All")
+				l = None
+	db.writeCSV()
+	db.closeConn()
+	
+	if not headless:
+		WaitForUserDialog(
+			"Analysis is done! \n Number of images analyzed: %s \n Running time: %s \n Number of failed images: %s"
+			% (len(d.filenames),
+			   (time.time() - start),
+			   len(errors))).show()
+	
+	print "Number of images analyzed: ", len(d.filenames)
+	
+	print 'It took', time.time() - start, 'seconds.'
+	
+	for e in errors:
+		print "Failed Images: ", e
+	
+	if headless:
+		sys.exit(0)

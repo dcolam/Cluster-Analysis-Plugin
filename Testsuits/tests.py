@@ -47,15 +47,16 @@ def initialize():
     #from net.imagej.ops import Ops
     #from net.imagej import legacy
 
-    #from net.imagej.legacy import LegacyService
+
+    from net.imagej.legacy import LegacyService
     #from net.imagej import ImageJ
     ##from org.scijava.ui import DefaultUIService
     #from net.imagej.ops import DefaultOpService
     #from io.scif.services import SCIFIODatasetService
 
-    #global legacy
+    global legacy
 
-    #legacy = LegacyService.getInstance()
+    legacy = LegacyService.getInstance()
 
     if not os.path.isdir(cab.dir_path):
         os.makedirs(cab.dir_path)
@@ -138,7 +139,7 @@ class TestTestParameters(unittest.TestCase):
     def change_ini(self):
         self.cp.update("ChannelOptions",
                       {"expath": inipath, "c1opt_boollist": [True, False, False, True], "testbool": True,
-                       "zstackbool": False, "backgroundradc1":50, "sigmac1":5})
+                       "zstackbool": True, "backgroundradc1":50, "sigmac1":5})
         self.cp.update("ParticleAnalysisOptions0", {"pasizeb1": 500, "pasizea1": 5, "watershed1":False})
         self.cp.update("AutomaticSelection", {"maskbool_list": [False, True, False, False]})
         self.cp.writeIni()
