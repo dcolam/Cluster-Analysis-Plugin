@@ -69,6 +69,6 @@ if __name__ in ["__builtin__", "__main__"]:
     for i, p in enumerate(paths):
         if p not in path:
             path.append(p)
-
+            print p
         import Cluster_Analysis_BETA_v2 as cab
         insert_and_test_ini(p, cab)
