@@ -1962,8 +1962,8 @@ class ParticleAnalyser(object):
                 "Binary-%s-%s-%s-%s" % (self.channel.channel_name, self.roi.getName(), m, self.sliceName))
             if index == 0:
                 new_roi = self.new_roi
-
-        self.new_roi = new_roi
+                
+		self.new_roi = new_roi
 
     def coloc(self, sub2, channel2, index):
         if self.channel.pa_inside or self.channel.pa_outside:
@@ -2175,7 +2175,7 @@ if __name__ in ['__builtin__', '__main__']:
         print "Failed Images: ", e
 
     if headless:
-    	if len(errors) == len(d.filenames):
-    		sys.exit(-1)
-    	else:
-        	sys.exit(0)
+        if len(errors) == len(d.filenames):
+            sys.exit(-1)
+        else:
+            sys.exit(0)

@@ -63,8 +63,11 @@ if __name__ in ["__builtin__", "__main__"]:
     dir_path = os.path.dirname(os.path.realpath('__file__'))
     # paths = [os.path.join(dir_path, "plugins", "Cluster_Analysis"), os.path.join(dir_path, "plugins", "Cluster_Analysis", "ImageJ2")]
     # cabs = [Cluster_Analysis_BETA, Cluster_Analysis_BETA_v2]
+    paths = find("Cluster_Analysis_BETA_v2.py", dir_path)
 
-    paths = [dir_path, os.path.join(dir_path, "plugins", "Cluster_Analysis")]
+    paths = [os.path.dirname(x) for x in paths if "plugins/Cluster_Analysis/Cluster_Analysis_BETA_v2.py" in x] 
+    print paths
+    #paths = [dir_path, os.path.join(dir_path, "plugins", "Cluster_Analysis")]
     # cabs = [Cluster_Analysis_BETA_v2]
     for i, p in enumerate(paths):
         if p not in path:
