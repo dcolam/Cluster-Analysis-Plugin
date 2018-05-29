@@ -2175,4 +2175,7 @@ if __name__ in ['__builtin__', '__main__']:
         print "Failed Images: ", e
 
     if headless:
-        sys.exit(0)
+    	if len(errors) == len(d.filenames):
+    		sys.exit(-1)
+    	else:
+        	sys.exit(0)
