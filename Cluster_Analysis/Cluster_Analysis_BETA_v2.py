@@ -12,6 +12,8 @@ from ij.gui import GenericDialog, WaitForUserDialog, Roi, ShapeRoi, Overlay
 from ij.process import ImageProcessor, AutoThresholder
 from ij.plugin import ChannelSplitter, ImageCalculator, RGBStackMerge, ZProjector, Duplicator, StackEditor, \
     Concatenator, RoiEnlarger
+
+from ij.plugin import ZProjector as zp
 from fiji.stacks import Hyperstack_rearranger as hyr
 from ij.plugin.frame import RoiManager
 from ij.plugin.filter import EDM, ParticleAnalyzer, Calibrator, Filler, Analyzer, PlugInFilterRunner
@@ -900,7 +902,8 @@ class Selection(object):
                 self.imp.hide()
                 imp2.copyAttributes(self.imp)
                 # IJ.run(imp2, "Z Project...", "projection=[Max Intensity] hide")
-                imp3 = self.image.zStack(imp2, "CHANNEL")
+                #imp3 = self.image.zStack(imp2, "CHANNEL")
+                imp3 = self.image.zStackIJ(imp2)
                 imp2.changes = False
                 imp2.close()
             # imp3.show()
@@ -1614,27 +1617,28 @@ class testParameters(object):
 # Image class that holds and manages an ImagePlus-object
 class Image(object):
     def __init__(self, path2image, dialoger, selectionManager, show=False):
-    
+
         self.show = show
         self.sm = selectionManager
         self.path = path2image
         self.name = os.path.splitext(os.path.split(self.path)[1])[0]
         self.preimp = BF.openImagePlus(self.path)[0]
-        
+
         IJ.run(self.preimp, "Set Scale...", " ")
         self.dialoger = dialoger
         self.group = [key for key, value in self.dialoger.groupedFiles.items() if self.path in value][0]
         self.channels = self.dialoger.channels
-        
+
         if self.dialoger.zStack and self.preimp.getNSlices() != 1:
-            self.imp = self.zStack(self.preimp)
+            #self.imp = self.zStack(self.preimp)
+            self.imp = self.zStackIJ(self.preimp)
         else:
             self.imp = self.preimp
         self.title = self.imp.getTitle()
         self.ip = self.imp.getProcessor()
-        
+
         self.output_path = os.path.join(self.dialoger.output_path_dict[self.group], self.imp.getTitle())
-        
+
         self.selections = []
         self.rois = []
         self.pas = []
@@ -1648,8 +1652,8 @@ class Image(object):
         else:
             subs = ChannelSplitter().split(self.imp)
             subs = [self.stackSplitter(s) for s in subs]
-            
-            
+
+            #print subs
         # subs = ChannelSplitter().split(self.imp)
 
         for r in self.rois:
@@ -1657,17 +1661,17 @@ class Image(object):
                 if self.channels[n].pa:
                     print r.getName()
                     if not isinstance(sub, list):
-                        print "ZStacked"
+                        #print "ZStacked"
                         self.imp.setRoi(r)
                         pa = ParticleAnalyser(sub, self.channels[n], self.show, r.getName())
-                        print self.channels[n].method
+                        #print self.channels[n].method
                         partRois = [pa.makeBinary(r)]
                         self.pas.append(pa)
                         partRois += [pa.coloc(subs[i], self.channels[i], i) for i, (x, y) in
                                      enumerate(zip(self.channels[n].list_1whichChannel, subs)) if x]
                         roiPath = self.output_path.replace(os.path.splitext(self.output_path)[1], "_")
                     else:
-                        print "Sliced"
+                        #print "Sliced"
                         for j, s in enumerate(sub):
                             self.imp.setRoi(r)
                             pa = ParticleAnalyser(s, self.channels[n], self.show, r.getName())
@@ -1694,6 +1698,10 @@ class Image(object):
                     s.close()
         self.imp.close()
 
+    def zStackIJ(self, imp):
+        z = zp(imp)
+        return z.run(imp,"max all")
+
     def stackSplitter(self, imp):
         def copyImp(stack, i):
             ip = stack.getProcessor(i)
@@ -1702,7 +1710,7 @@ class Image(object):
             # imp2.copyAttributes(imp)
             imp2.setCalibration(cal)
             imp2.setTitle("Slice%s" % i)
-            print imp2.getTitle()
+            #print imp2.getTitle()
             return imp2
 
         stack = imp.getStack()
@@ -1740,11 +1748,11 @@ class Image(object):
 #@OUTPUT ImgPlus outimp
 #@OpService ops
 #@DatasetService ds
-#@ConvertService cs
 
     def zStack(self, imp, projected_dimension="Z"):
         from net.imagej.axis import Axes
         from net.imagej.ops import Ops
+
         disp = legacy.getImageMap().registerLegacyImage(imp)
         data = disp.get(0).getData()
         projection_type = "Max"
@@ -1759,41 +1767,15 @@ class Image(object):
         ops.transform().project(projected, data, proj_op, dim)
         output = ds.create(projected)
         disp = ij.display().createDisplayQuietly(output)
-
-        #outimp = ij.convert().convert(output, ImagePlus)
-        #outimp = cs.convert(disp, ImagePlus)
         outimp = legacy.getImageMap().registerDisplay(disp)
         outimp.copyAttributes(self.preimp)
-        #imp2 = hyr.reorderHyperstack(outimp, 2, 1, 0, True, False)
-        #imp2.show()
-                #outimp.close()
-                #print outimp.getNChannels(), outimp.getNSlices(), outimp.getNFrames() 
-                #self.preimp.close()
+        imp2 = hyr.reorderHyperstack(outimp, 2, 1, 0, True, False)
+        outimp.close()
+        self.preimp.close()
         depth = imp.getProcessor().getBitDepth()
-                #IJ.run(imp2, "%s-bit" % depth, "")
-                #imp2.setDisplayMode(IJ.COLOR)
-                #return imp2
-
-        ip = outimp.getProcessor()
-
-        if depth == 8:
-            newip = ip.convertToByte(False)
-        elif depth == 16:
-            newip = ip.convertToShort(False)
-        else:
-            newip = ip
-
-        outimp.setProcessor(newip)
-        #print depth
-        #outimp.show()
-        #WaitForUserDialog("1").show()
-        #IJ.run(outimp, "%s-bit" % depth, "")
-        outimp.show()
-        WaitForUserDialog("1").show()
-        outimp.setDisplayMode(IJ.COLOR)
-        #outimp.show()
-        #WaitForUserDialog("1").show()
-        return outimp
+        IJ.run(imp2, "%s-bit" % depth, "")
+        imp2.setDisplayMode(IJ.COLOR)
+        return imp2
 
 
 #ParticleAnalysis manager that performs Particle and Colocalisation Analysis on images and stores the right informations
@@ -1852,7 +1834,7 @@ class ParticleAnalyser(object):
             options = ParticleAnalyzer.DISPLAY_SUMMARY | ParticleAnalyzer.SHOW_PROGRESS | ParticleAnalyzer.SHOW_RESULTS | ParticleAnalyzer.SHOW_MASKS | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES
         else:
             options = ParticleAnalyzer.DISPLAY_SUMMARY | ParticleAnalyzer.SHOW_PROGRESS | ParticleAnalyzer.SHOW_RESULTS | ParticleAnalyzer.SHOW_MASKS  # ParticleAnalyzer.FOUR_CONNECTED | ParticleAnalyzer.SHOW_MASKS
-            print options
+            #print options
 
         measurements = Analyzer().getMeasurements()
 
@@ -1860,11 +1842,11 @@ class ParticleAnalyser(object):
             pa = ParticleAnalyzer(options, measurements, rt, cal.getRawX(math.sqrt(self.channel.lowerSize)) ** 2,
                                   cal.getRawX(math.sqrt(self.channel.higherSize)) ** 2, self.channel.circ1,
                                   self.channel.circ2)
-            print "Corrected: ", cal.getRawX(math.sqrt(self.channel.lowerSize)) ** 2, cal.getRawX(
-                math.sqrt(self.channel.higherSize)) ** 2, cal.getRawX(self.channel.lowerSize ** 0.5) ** 2, cal.getRawX(
-                self.channel.higherSize ** 0.5) ** 2
-            print "Raw: ", self.channel.lowerSize, self.channel.higherSize, cal.getRawX(
-                self.channel.lowerSize), cal.getRawX(self.channel.higherSize)
+            #print "Corrected: ", cal.getRawX(math.sqrt(self.channel.lowerSize)) ** 2, cal.getRawX(
+                #math.sqrt(self.channel.higherSize)) ** 2, cal.getRawX(self.channel.lowerSize ** 0.5) ** 2, cal.getRawX(
+                #self.channel.higherSize ** 0.5) ** 2
+            #print "Raw: ", self.channel.lowerSize, self.channel.higherSize, cal.getRawX(
+                #self.channel.lowerSize), cal.getRawX(self.channel.higherSize)
         else:
             pa = ParticleAnalyzer(options, measurements, rt, cal.getRawX(math.sqrt(paString[0])) ** 2,
                                   cal.getRawX(math.sqrt(paString[1])) ** 2, paString[2], paString[3])
@@ -1903,10 +1885,7 @@ class ParticleAnalyser(object):
 
         watershed_mask_list = []
         imp_list = []
-        print self.channel.method
-
         for index, m in enumerate(self.channel.method):
-            print m
             label = self.sub.getTitle()
             imp2 = self.sub.duplicate()
             imp2.setTitle("Binary-%s-%s" % (label, m))
@@ -1958,7 +1937,7 @@ class ParticleAnalyser(object):
             if self.show:
                 if self.new_roi:
                     imp2.setRoi(self.new_roi)
-                    IJ.run(imp2, "Properties... ", "  stroke=Green")
+                    IJ.run(imp2, "Properties... ", " width=2 stroke=Green")
                     flat = imp2.flatten()
                     flat.copyAttributes(self.sub)
                     flat.setRoi(self.roi)
@@ -1971,7 +1950,7 @@ class ParticleAnalyser(object):
                 else:
                     print "No particles found"
                     imp2.setRoi(self.roi)
-                    IJ.run(imp2, "Properties... ", " width=2  stroke=Red")
+                    IJ.run(imp2, "Properties... ", " width=2 stroke=Red")
                     flat = imp2.flatten()
                     flat.setTitle(
                         "Binary-%s-%s-%s-%s" % (self.channel.channel_name, self.roi.getName(), m, self.sliceName))
@@ -1995,7 +1974,7 @@ class ParticleAnalyser(object):
             
             def flatShow(colocMask, inorout, roi):
                 binary.setRoi(roi)
-                IJ.run(binary, "Properties... ", "  stroke=Yellow width=1")
+                IJ.run(binary, "Properties... ", "  stroke=Yellow width=2")
                 ov = Overlay(roi)
                 binary.setOverlay(ov)
                 IJ.run("Overlay Options...", "stroke=Magenta width=1 fill=none")
@@ -2004,7 +1983,7 @@ class ParticleAnalyser(object):
                 flatRoi = colocMask.getRoi()
                 if flatRoi:
                     flatIn.setRoi(flatRoi)
-                    IJ.run(flatIn, "Properties... ", "  stroke=Green")
+                    IJ.run(flatIn, "Properties... ", "  stroke=Green width=2")
                     flat2 = flatIn.flatten()
                     # flat2.copyAttributes(flatIn)
                     flatIn.close()
@@ -2050,14 +2029,14 @@ class ParticleAnalyser(object):
             IJ.run(binary, "Clear Outside", "slice")
             if channel2.watershed:
                 new_roi, mask = self.watershed(binary, ip)
-                mask.setRoi(pa_roi)
+                mask.setRoi(self.new_roi)
                 if new_roi and self.new_roi:
                     IJ.run(mask, "Clear Outside", "slice")
                     IJ.run(mask, "Create Selection", '')
                     mask_roi = mask.getRoi()
                     binary.setRoi(mask_roi)
             else:
-                binary.setRoi(pa_roi)
+                binary.setRoi(self.new_roi)
             
             if self.new_roi:
                 if self.channel.pa_inside:
@@ -2113,20 +2092,15 @@ def gc():
 ####### Start of the script
 ##############################################################################################################
 
-# expath = "/Users/david/git/Cluster-Analysis-Plugin/ExampleImage"
-
-# if not headless:
-#    dir_path = os.path.dirname(os.path.realpath('__file__'))
-#    dir_path = os.path.join(dir_path, "plugins", "Cluster_Analysis")
-# else:
 dir_path = os.path.realpath('__file__')
-# print dir_path, os.path.dirname(os.path.realpath('__file__'))
+
 dir_path = os.path.dirname(os.path.realpath('__file__'))
+
 files = find("Cluster_Analysis_BETA_v2.py", dir_path)
 for f in files:
-    if "ImageJ2" in f:
-        dir_path = os.path.dirname(f)
-
+    dir_path = os.path.dirname(f)
+    
+print dir_path
 if __name__ in ['__builtin__', '__main__']:
 
     # Set Measurements
@@ -2143,7 +2117,7 @@ if __name__ in ['__builtin__', '__main__']:
     IJ.run("Close All", "")
     IJ.redirectErrorMessages(True)
     memory = gc()
-    print "Current Memory", memory
+    #print "Current Memory", memory
 
     IJ.setDebugMode(False)
     IJ.resetEscape()
@@ -2173,7 +2147,7 @@ if __name__ in ['__builtin__', '__main__']:
                     # store information into the database
                     db.extractData(l)
                 if index % 10 == 0:
-                    print "Current Memory", gc()
+                    gc()
             # Try-catch statement so that analysis is not interrupted
             except:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
@@ -2195,7 +2169,7 @@ if __name__ in ['__builtin__', '__main__']:
 
     print "Number of images analyzed: ", len(d.filenames)
 
-    print 'It took', time.time() - start, 'seconds.'
+    print 'It took', round(time.time() - start, 2), 'seconds.'
 
     for e in errors:
         print "Failed Images: ", e
