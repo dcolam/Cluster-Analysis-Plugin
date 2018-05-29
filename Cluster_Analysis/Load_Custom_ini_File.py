@@ -2,7 +2,7 @@ from shutil import copyfile
 import os, sys
 from ij import IJ
 from sys import path
-import Cluster_Analysis_BETA
+#import Cluster_Analysis_BETA
 import Cluster_Analysis_BETA_v2
 
 def find(name, p):
