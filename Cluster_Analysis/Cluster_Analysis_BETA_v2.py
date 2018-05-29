@@ -884,7 +884,7 @@ class Selection(object):
     def getSelection(self):
         # rm = RoiManager.getInstance()
         # if rm == None:
-        #	rm = RoiManager()
+        #    rm = RoiManager()
 
         channels = ChannelSplitter.split(self.imp)
 
@@ -987,23 +987,23 @@ class Selection(object):
 
                 # mask_list1 = rm.getSelectedRoisAsArray()
                 # for i in range(1, len(mask_list1)):
-                #		mask.setRoi(mask_list1[i])
-                #		if mask.getRoi() is not None:
+                #        mask.setRoi(mask_list1[i])
+                #        if mask.getRoi() is not None:
                 #
-                #			r1 = ShapeRoi(mask.getRoi())
-                #			r2 = ShapeRoi(RoiEnlarger.enlarge(shape_1, cal.getRawX(5)))
-                #			r.setName(self.name + "-Increment%s" % i)
-                #			roi_list.append(r)
-                #			rm.addRoi(mask.getRoi())
-                #		self.clear(mask, 0)
-                #			IJ.run(mask, "Select All", "")
+                #            r1 = ShapeRoi(mask.getRoi())
+                #            r2 = ShapeRoi(RoiEnlarger.enlarge(shape_1, cal.getRawX(5)))
+                #            r.setName(self.name + "-Increment%s" % i)
+                #            roi_list.append(r)
+                #            rm.addRoi(mask.getRoi())
+                #        self.clear(mask, 0)
+                #            IJ.run(mask, "Select All", "")
                 # IJ.run(mask, "Clear", "")
                 # except:
-                #	print "Dendritic segment analysis on this image is not possible"
-                #	exc_type, exc_value, exc_traceback = sys.exc_info()
-                #	lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
-                #	print ''.join('!! ' + line for line in lines)
-                #	print "Analysis of image %s failed" % os.path.split(i)[1]
+                #    print "Dendritic segment analysis on this image is not possible"
+                #    exc_type, exc_value, exc_traceback = sys.exc_info()
+                #    lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
+                #    print ''.join('!! ' + line for line in lines)
+                #    print "Analysis of image %s failed" % os.path.split(i)[1]
 
                 if self.inverse:
                     # mask.setRoi(roi_list[0])
@@ -1571,12 +1571,12 @@ class testParameters(object):
             return self.d, self.s
 
     # def stitch(self):
-    #		if WindowManager.getImageCount() > 1:
-    #			IJ.run("Images to Stack", "name=Stack title=[] use")
-    #		stack = IJ.getImage()
-    #		WaitForUserDialog("Inspect results and then click okay").show()
-    #		stack.close()
-    #		return
+    #        if WindowManager.getImageCount() > 1:
+    #            IJ.run("Images to Stack", "name=Stack title=[] use")
+    #        stack = IJ.getImage()
+    #        WaitForUserDialog("Inspect results and then click okay").show()
+    #        stack.close()
+    #        return
 
     def stitch(self):
         if WindowManager.getImageCount() > 1:
@@ -1614,27 +1614,27 @@ class testParameters(object):
 # Image class that holds and manages an ImagePlus-object
 class Image(object):
     def __init__(self, path2image, dialoger, selectionManager, show=False):
-
+    
         self.show = show
         self.sm = selectionManager
         self.path = path2image
         self.name = os.path.splitext(os.path.split(self.path)[1])[0]
         self.preimp = BF.openImagePlus(self.path)[0]
-
+        
         IJ.run(self.preimp, "Set Scale...", " ")
         self.dialoger = dialoger
         self.group = [key for key, value in self.dialoger.groupedFiles.items() if self.path in value][0]
         self.channels = self.dialoger.channels
-
+        
         if self.dialoger.zStack and self.preimp.getNSlices() != 1:
             self.imp = self.zStack(self.preimp)
         else:
             self.imp = self.preimp
         self.title = self.imp.getTitle()
         self.ip = self.imp.getProcessor()
-
+        
         self.output_path = os.path.join(self.dialoger.output_path_dict[self.group], self.imp.getTitle())
-
+        
         self.selections = []
         self.rois = []
         self.pas = []
@@ -1648,8 +1648,8 @@ class Image(object):
         else:
             subs = ChannelSplitter().split(self.imp)
             subs = [self.stackSplitter(s) for s in subs]
-
-            print subs
+            
+            
         # subs = ChannelSplitter().split(self.imp)
 
         for r in self.rois:
@@ -1681,10 +1681,10 @@ class Image(object):
         IJ.saveAsTiff(self.imp, self.output_path)
 
         # for p in partRois:
-        #	if p:
-        #		r = roiPath + p.getName() + ".roi"
-        #		self.imp.setRoi(p)
-        #		IJ.saveAs(self.imp, "Selection", r)
+        #    if p:
+        #        r = roiPath + p.getName() + ".roi"
+        #        self.imp.setRoi(p)
+        #        IJ.saveAs(self.imp, "Selection", r)
 
         for sub in subs:
             if not isinstance(sub, list):
@@ -1740,11 +1740,11 @@ class Image(object):
 #@OUTPUT ImgPlus outimp
 #@OpService ops
 #@DatasetService ds
+#@ConvertService cs
 
     def zStack(self, imp, projected_dimension="Z"):
         from net.imagej.axis import Axes
         from net.imagej.ops import Ops
-
         disp = legacy.getImageMap().registerLegacyImage(imp)
         data = disp.get(0).getData()
         projection_type = "Max"
@@ -1759,15 +1759,41 @@ class Image(object):
         ops.transform().project(projected, data, proj_op, dim)
         output = ds.create(projected)
         disp = ij.display().createDisplayQuietly(output)
+
+        #outimp = ij.convert().convert(output, ImagePlus)
+        #outimp = cs.convert(disp, ImagePlus)
         outimp = legacy.getImageMap().registerDisplay(disp)
         outimp.copyAttributes(self.preimp)
-        imp2 = hyr.reorderHyperstack(outimp, 2, 1, 0, True, False)
-        outimp.close()
-        self.preimp.close()
+        #imp2 = hyr.reorderHyperstack(outimp, 2, 1, 0, True, False)
+        #imp2.show()
+                #outimp.close()
+                #print outimp.getNChannels(), outimp.getNSlices(), outimp.getNFrames() 
+                #self.preimp.close()
         depth = imp.getProcessor().getBitDepth()
-        IJ.run(imp2, "%s-bit" % depth, "")
-        imp2.setDisplayMode(IJ.COLOR)
-        return imp2
+                #IJ.run(imp2, "%s-bit" % depth, "")
+                #imp2.setDisplayMode(IJ.COLOR)
+                #return imp2
+
+        ip = outimp.getProcessor()
+
+        if depth == 8:
+            newip = ip.convertToByte(False)
+        elif depth == 16:
+            newip = ip.convertToShort(False)
+        else:
+            newip = ip
+
+        outimp.setProcessor(newip)
+        #print depth
+        #outimp.show()
+        #WaitForUserDialog("1").show()
+        #IJ.run(outimp, "%s-bit" % depth, "")
+        outimp.show()
+        WaitForUserDialog("1").show()
+        outimp.setDisplayMode(IJ.COLOR)
+        #outimp.show()
+        #WaitForUserDialog("1").show()
+        return outimp
 
 
 #ParticleAnalysis manager that performs Particle and Colocalisation Analysis on images and stores the right informations
@@ -1961,105 +1987,105 @@ class ParticleAnalyser(object):
         self.new_roi = new_roi
 
     def coloc(self, sub2, channel2, index):
-		if self.channel.pa_inside or self.channel.pa_outside:
-			if self.show:
-				self.pa_show = "Masks"
-			else:
-				self.pa_show = "Nothing"
-			
-			def flatShow(colocMask, inorout, roi):
-				binary.setRoi(roi)
-				IJ.run(binary, "Properties... ", "  stroke=Yellow width=1")
-				ov = Overlay(roi)
-				binary.setOverlay(ov)
-				IJ.run("Overlay Options...", "stroke=Magenta width=1 fill=none")
-				flatIn = binary.flatten()
-				IJ.run(colocMask, "Create Selection", '')
-				flatRoi = colocMask.getRoi()
-				if flatRoi:
-					flatIn.setRoi(flatRoi)
-					IJ.run(flatIn, "Properties... ", "  stroke=Green")
-					flat2 = flatIn.flatten()
-					# flat2.copyAttributes(flatIn)
-					flatIn.close()
-					flat2.setTitle(
-						inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" +
-						self.tp["Roi Name"] + "_" + self.sliceName)
-					flat2.show()
-				else:
-					print "No %s Coloc Particles found" % inorout
-					flatIn.setTitle(
-					    inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" +
-					    self.tp["Roi Name"] + "_" + self.sliceName + "_Failed")
-					flatIn.show()
-			    # colocMask.show()
-			    # WaitForUserDialog("Hallo").show()
-			
-			IJ.redirectErrorMessages(True)
-			sub_title = self.sub.getTitle()
-			sub2_title = sub2.getTitle()
-			sizeMin = channel2.lowerSize
-			sizeMax = channel2.higherSize
-			circ1 = channel2.circ1
-			circ2 = channel2.circ2
-			
-			binary = sub2.duplicate()
-			ip = binary.getProcessor()
-			binary.setTitle("Coloc-mask" + sub_title + sub2_title)
-			
-			m = channel2.method[0]
-			if m != "Manual":
-				threshold_constant = AutoThresholder.Method.valueOf(m)
-				ip.setAutoThreshold(threshold_constant, True, ImageProcessor.RED_LUT)
-			else:
-				while not binary.isThreshold():
-					binary.show()
-					IJ.run("Threshold...")
-					WaitForUserDialog("Please, set your manual threshold (Please, make sure to tick the Dark Background option)").show()
-					binary.hide()
-			#for pa_roi in self.new_rois:
-			binary.setProcessor(ip)
-			binary.updateAndDraw()
-			binary.setRoi(self.roi)
-			IJ.run(binary, "Clear Outside", "slice")
-			if channel2.watershed:
-			    new_roi, mask = self.watershed(binary, ip)
-			    mask.setRoi(pa_roi)
-			    if new_roi and self.new_roi:
-			        IJ.run(mask, "Clear Outside", "slice")
-			        IJ.run(mask, "Create Selection", '')
-			        mask_roi = mask.getRoi()
-			        binary.setRoi(mask_roi)
-			else:
-			    binary.setRoi(pa_roi)
-			
-			if self.new_roi:
-			    if self.channel.pa_inside:
-			        paString = (sizeMin, sizeMax, circ1, circ2)
-			        colocMaskIn, tp_stringIn, areaIn, roi = self.colocPA("Inside", binary, paString)
-			        # self.roisInside = roi
-			        roi.setName(
-			            "Inside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
-			                index))
-			        self.tp_colocIn[
-			            "Inside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
-			                index)] = [tp_stringIn, areaIn]
-			        if self.show:
-			            flatShow(colocMaskIn, "Inside", roi)
-			    if self.channel.pa_outside:
-			        paString = (sizeMin, sizeMax, circ1, circ2)
-			        colocMaskOut, tp_stringOut, areaOut, roi = self.colocPA("Outside", binary, paString)
-			        # self.roisOutside = roi
-			        self.tp_colocOut[
-			            "Outside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
-			                index)] = [tp_stringOut, areaOut]
-			        roi.setName(
-			            "Outside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
-			                index))
-			        if self.show:
-			            flatShow(colocMaskOut, "Outside", roi)
-			binary.close()
-			return roi
+        if self.channel.pa_inside or self.channel.pa_outside:
+            if self.show:
+                self.pa_show = "Masks"
+            else:
+                self.pa_show = "Nothing"
+            
+            def flatShow(colocMask, inorout, roi):
+                binary.setRoi(roi)
+                IJ.run(binary, "Properties... ", "  stroke=Yellow width=1")
+                ov = Overlay(roi)
+                binary.setOverlay(ov)
+                IJ.run("Overlay Options...", "stroke=Magenta width=1 fill=none")
+                flatIn = binary.flatten()
+                IJ.run(colocMask, "Create Selection", '')
+                flatRoi = colocMask.getRoi()
+                if flatRoi:
+                    flatIn.setRoi(flatRoi)
+                    IJ.run(flatIn, "Properties... ", "  stroke=Green")
+                    flat2 = flatIn.flatten()
+                    # flat2.copyAttributes(flatIn)
+                    flatIn.close()
+                    flat2.setTitle(
+                        inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" +
+                        self.tp["Roi Name"] + "_" + self.sliceName)
+                    flat2.show()
+                else:
+                    print "No %s Coloc Particles found" % inorout
+                    flatIn.setTitle(
+                        inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" +
+                        self.tp["Roi Name"] + "_" + self.sliceName + "_Failed")
+                    flatIn.show()
+                # colocMask.show()
+                # WaitForUserDialog("Hallo").show()
+            
+            IJ.redirectErrorMessages(True)
+            sub_title = self.sub.getTitle()
+            sub2_title = sub2.getTitle()
+            sizeMin = channel2.lowerSize
+            sizeMax = channel2.higherSize
+            circ1 = channel2.circ1
+            circ2 = channel2.circ2
+            
+            binary = sub2.duplicate()
+            ip = binary.getProcessor()
+            binary.setTitle("Coloc-mask" + sub_title + sub2_title)
+            
+            m = channel2.method[0]
+            if m != "Manual":
+                threshold_constant = AutoThresholder.Method.valueOf(m)
+                ip.setAutoThreshold(threshold_constant, True, ImageProcessor.RED_LUT)
+            else:
+                while not binary.isThreshold():
+                    binary.show()
+                    IJ.run("Threshold...")
+                    WaitForUserDialog("Please, set your manual threshold (Please, make sure to tick the Dark Background option)").show()
+                    binary.hide()
+            #for pa_roi in self.new_rois:
+            binary.setProcessor(ip)
+            binary.updateAndDraw()
+            binary.setRoi(self.roi)
+            IJ.run(binary, "Clear Outside", "slice")
+            if channel2.watershed:
+                new_roi, mask = self.watershed(binary, ip)
+                mask.setRoi(pa_roi)
+                if new_roi and self.new_roi:
+                    IJ.run(mask, "Clear Outside", "slice")
+                    IJ.run(mask, "Create Selection", '')
+                    mask_roi = mask.getRoi()
+                    binary.setRoi(mask_roi)
+            else:
+                binary.setRoi(pa_roi)
+            
+            if self.new_roi:
+                if self.channel.pa_inside:
+                    paString = (sizeMin, sizeMax, circ1, circ2)
+                    colocMaskIn, tp_stringIn, areaIn, roi = self.colocPA("Inside", binary, paString)
+                    # self.roisInside = roi
+                    roi.setName(
+                        "Inside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
+                            index))
+                    self.tp_colocIn[
+                        "Inside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
+                            index)] = [tp_stringIn, areaIn]
+                    if self.show:
+                        flatShow(colocMaskIn, "Inside", roi)
+                if self.channel.pa_outside:
+                    paString = (sizeMin, sizeMax, circ1, circ2)
+                    colocMaskOut, tp_stringOut, areaOut, roi = self.colocPA("Outside", binary, paString)
+                    # self.roisOutside = roi
+                    self.tp_colocOut[
+                        "Outside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
+                            index)] = [tp_stringOut, areaOut]
+                    roi.setName(
+                        "Outside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
+                            index))
+                    if self.show:
+                        flatShow(colocMaskOut, "Outside", roi)
+            binary.close()
+            return roi
 
     def colocPA(self, inorout, binary, paString):
         binary.setRoi(self.new_roi)
@@ -2090,8 +2116,8 @@ def gc():
 # expath = "/Users/david/git/Cluster-Analysis-Plugin/ExampleImage"
 
 # if not headless:
-#	dir_path = os.path.dirname(os.path.realpath('__file__'))
-#	dir_path = os.path.join(dir_path, "plugins", "Cluster_Analysis")
+#    dir_path = os.path.dirname(os.path.realpath('__file__'))
+#    dir_path = os.path.join(dir_path, "plugins", "Cluster_Analysis")
 # else:
 dir_path = os.path.realpath('__file__')
 # print dir_path, os.path.dirname(os.path.realpath('__file__'))
