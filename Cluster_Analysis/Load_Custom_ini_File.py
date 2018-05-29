@@ -64,7 +64,7 @@ if __name__ in ["__builtin__", "__main__"]:
     # paths = [os.path.join(dir_path, "plugins", "Cluster_Analysis"), os.path.join(dir_path, "plugins", "Cluster_Analysis", "ImageJ2")]
     # cabs = [Cluster_Analysis_BETA, Cluster_Analysis_BETA_v2]
 
-    paths = [os.path.join(dir_path, "plugins", "Cluster_Analysis")]
+    paths = [dir_path, os.path.join(dir_path, "plugins", "Cluster_Analysis")]
     # cabs = [Cluster_Analysis_BETA_v2]
     for i, p in enumerate(paths):
         if p not in path:
