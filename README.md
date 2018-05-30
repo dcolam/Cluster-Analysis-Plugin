@@ -85,4 +85,17 @@ These tables are also available as .csv-tables in the Output Table folder.
 
 It is recommended to open your Output.db file with a a DB-Browser such as DB-Browser for Sqlite (http://sqlitebrowser.org/) for a quick look, but to import your datasets using Matlab, R, Python or another popular programming language to properly analyze your data. The usual routine consists of creating a connection to the database and defining a query containing conditional-statements to correctly retrieve the corresponding measurements.
 
+### Headless-mode
+
+Thanks to the headless-mode functionality of ImageJ2 and the Cluster Analysis Plugin, the program is able to run in a desktop-free environment such as an external server (preinstalled with FIJI). Load a previously tested ini.cfg-file with the right parameters using following command in a bash-shell terminal (in a Linux-server):
+```
+pathToFiji/Fiji.app/ImageJ-linux64 --ij2 --headless --run pathToPluginFolder/Cluster_Analysis/Load_Custom_ini_File.py 'inifile="pathToIniFile/ini.cfg"'
+```
+Then start running the Cluster Analysis in a similar manner by using following command:
+
+```
+pathToFiji/Fiji.app/ImageJ-linux64 --ij2 --headless --run pathToPluginFolder/Cluster_Analysis/Cluster_Analysis_BETA_v2.py 'expath="pathToInputFolder/",headless="True",measure="False"'
+```
+Make sure all paths are correct and pointing to the right scripts and folders. The Output-folder with the spreadsheets and database can be found as usual in "pathToInputFolder/Particle_Analysis/Output_Table"
+
 For more information, don't hesitate to contact me. Reporting bugs and issues in the issue-section of this repository is highly appreciated.
