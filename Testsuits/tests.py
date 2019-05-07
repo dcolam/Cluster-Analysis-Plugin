@@ -41,7 +41,7 @@ def initialize():
         os.makedirs(dirs)
 
     global cab
-    import Cluster_Analysis_BETA_v2 as cab
+    import Cluster_Analysis_BETA_v3 as cab
 
     #from net.imagej.axis import Axes
     #from net.imagej.ops import Ops
