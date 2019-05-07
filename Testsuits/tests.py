@@ -71,6 +71,8 @@ def set_up_params(inipath, test=True, initialized=False):
     cab.expath2 = inipath
     cab.expath = inipath
     cab.measure = False
+    cab.expName = "TestRun"
+    cab.c = "Red"
 
     t = cab.testParameters()
     cab.cp = cab.config(False)
