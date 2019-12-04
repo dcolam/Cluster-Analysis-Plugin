@@ -2183,7 +2183,7 @@ def formatTime(start):
 
 dir_path = os.path.realpath('__file__')
 dir_path = os.path.dirname(os.path.realpath('__file__'))
-files = find("Cluster_Analysis_BETA_v2.py", dir_path)
+files = find("Cluster_Analysis_BETA_v3.py", dir_path)
 for f in files:
 	dir_path = os.path.dirname(f)
 
