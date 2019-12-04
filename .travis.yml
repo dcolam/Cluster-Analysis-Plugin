@@ -26,7 +26,6 @@ install: true
 script:
 #!/usr/bin/env sh
 - set -e
-- xvfb-run make test
 # Define some variables
 - export IJ_PATH="$HOME/Fiji.app"
 - export URL="http://sites.imagej.net/$UPDATE_SITE/"
