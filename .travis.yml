@@ -11,7 +11,7 @@ services:
  - xvfb
 
 env:
- - TEST_FOLDER=/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage FIJI_FOLDER=/home/travis/Fiji.app JAVA_OPTS=-Xmx2g
+ - TEST_FOLDER=/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage FIJI_FOLDER=/home/travis/Fiji.app JAVA_OPTS="-Xmx2g -Djava.awt.headless=true"
 
 before_install:
  - export JYTHON_URL='http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.0/jython-installer-2.7.0.jar'
