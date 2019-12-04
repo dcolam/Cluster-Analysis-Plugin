@@ -1003,7 +1003,7 @@ class Selection(object):
 							  Double(circb))
 
 		pa.setHideOutputImage(True)
-		pa.analyze(imp)
+		#pa.analyze(imp)
 		if pa.analyze(imp):
 			if self.spineBool and not spines:
 				if rt.size():
@@ -1131,7 +1131,8 @@ class Selection(object):
 				mask.setRoi(r2)
 				IJ.setBackgroundColor(255, 255, 255)
 				rip = mask.getProcessor()
-				rip.setColor(Color.BLACK)
+				if not headless:
+					rip.setColor(Color.BLACK)
 				maskRoi = mask.getRoi()
 				rip.fill(maskRoi)
 				maskRoi.setName(self.name)
