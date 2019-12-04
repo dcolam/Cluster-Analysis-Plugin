@@ -23,7 +23,6 @@ from ij.plugin.filter import ThresholdToSelection as tts
 from ij.measure import ResultsTable, Calibration
 from ij.io import RoiDecoder
 import org.scijava.command.Command
-
 #@File(label = "Select an input folder with the images to analyze", value=expath, required=true, style="directory", persist=true) expath
 #@String (label="Name of Experiment", value="Example") expName
 #@Boolean(label="Headless?", value=True) headless
@@ -2181,6 +2180,11 @@ for f in files:
 
 print dir_path
 luts = {"Black and White": ImageProcessor.BLACK_AND_WHITE_LUT, "Red": ImageProcessor.RED_LUT, "Over/Under": ImageProcessor.OVER_UNDER_LUT}
+
+if headless:
+	colSel = ColorRGB("White"),
+	colParticles = ColorRGB("White"),
+	colColoc = ColorRGB("White")
 
 if __name__ in ['__builtin__', '__main__']:
 
