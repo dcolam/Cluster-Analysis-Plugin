@@ -13,11 +13,6 @@ services:
 env:
  - TEST_FOLDER=/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage FIJI_FOLDER=/home/travis/Fiji.app JAVA_OPTS=-Xmx2g
 
-before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
-
 before_install:
  - export JYTHON_URL='http://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.0/jython-installer-2.7.0.jar'
  - wget $JYTHON_URL -O jython_installer-2.7.0.jar; java -jar jython_installer-2.7.0.jar -s -d $HOME/jython; export PATH=$HOME/jython/bin/jython:$PATH;
