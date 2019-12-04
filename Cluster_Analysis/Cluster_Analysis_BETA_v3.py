@@ -1881,7 +1881,12 @@ class ParticleAnalyser(object):
 		if inorout == "Outside":
 			options = ParticleAnalyzer.DISPLAY_SUMMARY | ParticleAnalyzer.SHOW_PROGRESS | ParticleAnalyzer.SHOW_RESULTS | ParticleAnalyzer.SHOW_MASKS | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES
 		else:
-			options = ParticleAnalyzer.DISPLAY_SUMMARY | ParticleAnalyzer.SHOW_PROGRESS | ParticleAnalyzer.SHOW_RESULTS | ParticleAnalyzer.SHOW_MASKS  # ParticleAnalyzer.FOUR_CONNECTED | ParticleAnalyzer.SHOW_MASKS
+			options = ParticleAnalyzer.DISPLAY_SUMMARY | ParticleAnalyzer.SHOW_PROGRESS | ParticleAnalyzer.SHOW_RESULTS | ParticleAnalyzer.SHOW_MASKS	
+		if headless:
+			if inorout == "Outside":
+				options = ParticleAnalyzer.SHOW_MASKS | ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES
+			else:
+				options = ParticleAnalyzer.SHOW_MASKS
 		measurements = Analyzer().getMeasurements()
 
 		if not paString:
