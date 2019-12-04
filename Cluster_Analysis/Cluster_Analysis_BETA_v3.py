@@ -996,6 +996,8 @@ class Selection(object):
 		IJ.run(imp, "Set Scale...", " ")
 		cal = imp.getCalibration()
 		options = ParticleAnalyzer.DISPLAY_SUMMARY | ParticleAnalyzer.SHOW_MASKS | ParticleAnalyzer.SHOW_RESULTS
+		if headless:
+			options = ParticleAnalyzer.SHOW_MASKS
 		msInt = Analyzer().getMeasurements()
 		rt = ResultsTable()
 		pa = ParticleAnalyzer(options, msInt, rt, math.pi * cal.getRawX(math.sqrt(sizea) / math.pi) ** 2,
@@ -1131,8 +1133,7 @@ class Selection(object):
 				mask.setRoi(r2)
 				IJ.setBackgroundColor(255, 255, 255)
 				rip = mask.getProcessor()
-				if not headless:
-					rip.setColor(Color.BLACK)
+				rip.setColor(Color.BLACK)
 				maskRoi = mask.getRoi()
 				rip.fill(maskRoi)
 				maskRoi.setName(self.name)
