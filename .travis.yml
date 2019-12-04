@@ -6,8 +6,9 @@ branches:
   only:
   - master
   - "/.*-[0-9]+\\..*/"
- services:
-  - xvfb
+
+services:
+ - xvfb
 
 env:
  - TEST_FOLDER=/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage FIJI_FOLDER=/home/travis/Fiji.app JAVA_OPTS=-Xmx2g
