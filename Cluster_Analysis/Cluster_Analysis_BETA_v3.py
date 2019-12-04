@@ -1911,7 +1911,8 @@ class ParticleAnalyser(object):
 			ovlay.drawLabels(False)
 			ovlay.drawNames(False)
 			ovlay.drawBackgrounds(False)
-			ovlay.setStrokeColor(Color(colParticles.getARGB()))
+			if not headless:
+				ovlay.setStrokeColor(Color(colParticles.getARGB()))
 			col = [rtA.getColumnHeadings()]
 			col += [rtA.getRowAsString(r) for r in range(0, rtA.size())]
 			if not col[0]:
