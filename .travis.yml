@@ -48,6 +48,7 @@ script:
 - $HOME/Fiji.app/ImageJ-linux64 --ij2 --headless --run $HOME/Fiji.app/plugins/Cluster_Analysis/Load_Custom_ini_File.py 'inifile="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage/ini.cfg"'
 - $HOME/jython/bin/jython $TRAVIS_BUILD_DIR/Testsuits/tests.py
 
+
 #- xvfb-run -a $HOME/Fiji.app/ImageJ-linux64 --ij2 --run $HOME/Fiji.app/plugins/Cluster_Analysis_travis_Tester.py 'filepath="/home/travis/build/dcolam/Cluster-Analysis-Plugin/ExampleImage"'
 
 
