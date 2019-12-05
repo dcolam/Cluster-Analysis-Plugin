@@ -73,7 +73,7 @@ Example of successful segmentation of the pyramidal cell layer (as red line) of 
 
 ![Alt Text](https://github.com/dcolam/Cluster-Analysis-Plugin/blob/master/ExampleImage/Coloc_Example.png?raw=True)
 
-Example of a colocalisation analysis between a dendritic (MAP2 in grey), a presynaptic (vGlut1 in red) and a postsynaptic marker (Shank1 in green) and their corresponding colocalisations (thresholded particles in red, found particles segmented in green).
+Example of a GFP-filled neuron stained for a post- and presynaptic marker. GFP was used as a mask to find post- and presynaptic components individually. Colocalisation between post- presynapse was achieved by superimposing one channel to the other and counting inside the superimposed channel (all bounded within the GFP-mask). By rotating the superimposed channel by 90°, one can estimate the random colocalisation between the two channels (Done automatically when performing colocalisation analysis)
 
 In experiment modus, the script will run all preprocessing and measurements steps in the background. This will make the analysis much faster. After the analysis is done, you will find in your original folder a new folder called Particle Analysis that includes a folder containing the saved region of interest (.roi files) to check on your segmentation outcome, as well as .tif file versions of your images after preprocessing. In the Output Table folder, you will find a SQlite database called Output.db with all the tables and measurements stored and an ini.cfg file, that contains the defined parameters of your experiment.
 
