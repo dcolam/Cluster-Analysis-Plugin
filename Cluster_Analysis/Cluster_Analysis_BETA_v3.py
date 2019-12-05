@@ -422,7 +422,6 @@ class db_interface(object):
 				print "Colocalisation Data inserted successfully"
 			else:
 				print "Colocalisation Data Insertion failed!!"
-
 		if self.spines:
 			if self.populateSpineTable():
 				print "Spine Analysis Data inserted successfully"
@@ -1929,7 +1928,38 @@ class ParticleAnalyser(object):
 				rt = an.getResultsTable()
 				col = [rt.getColumnHeadings()]
 		return mask, maskRoi, col
-
+		
+	def getTextOverlay(self,m,n, coloc=False, inorout="", channel2=""):
+		if coloc:
+			if not "Random" in inorout:
+				text="Colocalisation Counts %s:\nMeasured Channel = %s,\nMethod = %s,\nSlice=%s"%(inorout,
+				channel2.channel_name,m,self.sliceName)
+			else:
+				text="Randomized Colocalisation Counts\n after 90 degree rotation:\nMeasured Channel = %s,\nMethod = %s,\nSlice=%s"%(
+				channel2.channel_name,m,self.sliceName)
+		else:
+			text="Particle Counts of:\nChannel = %s,\nThreshold = %s,\nSlice = %s"%(self.channel.channel_name, m, self.sliceName)
+		f=Font("SANS_SERIF",Font.BOLD, int(round(15*self.width)))
+		troi= TextRoi(10, 10, text, f)
+		colBack = Color(1.0,1.0,1.0,0.5)
+		troi.setStrokeColor(Color.BLACK)
+		dims = troi.getFloatHeight()
+		troiSel = TextRoi(10, 10 + dims, "Selection = %s"%self.roi_name, f)
+		troiSel.setStrokeColor(Color(colSel.getARGB()))
+		troiPA = TextRoi(10, 10 +troiSel.getFloatHeight()+ dims, "Found Particles = %s"%(n), f)
+		troiPA.setStrokeColor(Color(colParticles.getARGB()))
+		trois = [troi, troiSel, troiPA]
+		if coloc:
+			troiColoc = TextRoi(10, 10 +troiSel.getFloatHeight()+ dims + troiPA.getFloatHeight(), "Channel used as Mask = %s"%(self.channel.channel_name), f)
+			troiColoc.setStrokeColor(Color(colColoc.getARGB()))
+			trois.append(troiColoc)
+		bg = Roi(10, 10, max([x.getFloatWidth() for x in trois]),sum([x.getFloatHeight() for x in trois]))
+		bg.setFillColor(colBack)
+		trois.insert(0, bg)
+		ovTroi = Overlay()
+		[ovTroi.add(x) for x in trois]
+		return ovTroi
+		
 	def makeBinary(self, roi):
 		self.roi = roi
 		self.new_roi = roi
@@ -1979,8 +2009,6 @@ class ParticleAnalyser(object):
 			if self.show:
 				self.roi.setColor(Color(colSel.getARGB()))
 				self.roi.setStrokeWidth(self.width)
-				text="Particle Analysis of:\nChannel = %s,\nSelection = %s,\nMethod = %s,\nSlice = %s\nNumber of Particles = %s"%(self.channel.channel_name, self.roi.getName(), m, self.sliceName, len(col)-1)
-				f=Font("SANS_SERIF",Font.BOLD, int(round(15*self.width)))
 				if self.new_roi:
 					self.new_roi.setStrokeColor(Color(colParticles.getARGB()))
 					self.new_roi.setStrokeWidth(self.width)
@@ -1989,11 +2017,7 @@ class ParticleAnalyser(object):
 					flat.copyAttributes(self.sub)
 					flat.setRoi(self.roi)
 					flat2 = flat.flatten()
-					troi= TextRoi(10, 10, text, f)
-					colBack = Color(1.0,1.0,1.0,0.7)
-					troi.setFillColor(colBack)
-					troi.setStrokeColor(Color.BLACK)
-					flat2.setRoi(troi)
+					flat2.setOverlay(self.getTextOverlay(m,len(col)-1, False))
 					flat2 = flat2.flatten()
 					flat2.setTitle(
 						"Binary-%s-%s-%s-%s" % (self.channel.channel_name, self.roi.getName(), m, self.sliceName))
@@ -2006,11 +2030,7 @@ class ParticleAnalyser(object):
 					flat = imp2.flatten()
 					flat.setTitle(
 						"Binary-%s-%s-%s-%s" % (self.channel.channel_name, self.roi.getName(), m, self.sliceName))
-					troi= TextRoi(10, 10, text, f)
-					colBack = Color(1.0,1.0,1.0,0.7)
-					troi.setFillColor(colBack)
-					troi.setStrokeColor(Color.BLACK)
-					flat.setRoi(troi)
+					flat.setOverlay(self.getTextOverlay(m,len(col)-1, False))
 					flat = flat.flatten()
 					flat.show()
 					imp2.close()
@@ -2030,49 +2050,35 @@ class ParticleAnalyser(object):
 			else:
 				self.pa_show = "Nothing"
 
-			def flatShow(colocMask, inorout, roi):
-				binary.setRoi(roi)
-				#IJ.run(binary, "Properties... ", "  stroke=%s width=%s" %(colColoc.toHTMLColor(), self.width*0.75))
+			def flatShow(colocMask, inorout, roi, numPA):
+				roi.setStrokeColor(Color(colColoc.getARGB()))
+				roi.setStrokeWidth(self.width)
 				ov = Overlay(roi)
 				binary.setOverlay(ov)
-				IJ.run("Overlay Options...", "stroke=%s width=%s fill=none" % (colSel.toHTMLColor(), self.width))
-				ov.setStrokeColor(Color(colColoc.getARGB()))
-				flatIn = binary.flatten()
 				IJ.run(colocMask, "Create Selection", '')
 				flatRoi = colocMask.getRoi()
-				f=Font("SANS_SERIF",Font.BOLD, int(round(15*self.width)))
 				if flatRoi:
 					flatRoi.setStrokeColor(Color(colParticles.getARGB()))
 					flatRoi.setStrokeWidth(self.width)
-					flatIn.setRoi(flatRoi)
-					#IJ.run(flatIn, "Properties... ", "  stroke=%s width=%s" %(colParticles.toHTMLColor(), self.width))
-					flat2 = flatIn.flatten()
-					flatIn.close()
+					ov.add(flatRoi)
+					ov.add(self.roi)
+					flat2 = binary.flatten()
 					flat2.setTitle(
 						inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" +
 						self.tp["Roi Name"] + "_" + self.sliceName)
-
-					text="Colocalisation Analysis %s:\nChannel used as Mask = %s,\nMeasured Channel = %s\nSelection = %s,\nMethod = %s,\nSlice=%s"%(inorout,
-					self.channel.channel_name, channel2.channel_name, self.tp["Roi Name"],m,self.sliceName)
-					
-					troi= TextRoi(10, 10, text, f)
-					colBack = Color(1.0,1.0,1.0,0.7)
-					troi.setFillColor(colBack)
-					troi.setStrokeColor(Color.BLACK)
-					flat2.setRoi(self.roi)
+					flat2.setOverlay(self.getTextOverlay(m,numPA, True, inorout, channel2))
 					flat2 = flat2.flatten()
-					
-					flat2.setRoi(troi)
-					flat3 = flat2.flatten()
-					flatIn.close()
-					flat2.close()
-					flat3.show()
+					flat2.show()
 				else:
+					flatIn = binary.flatten()
 					print "No %s Coloc Particles found" % inorout
 					flatIn.setTitle(
 						inorout + "_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" +
 						self.tp["Roi Name"] + "_" + self.sliceName + "_Failed")
+					flatIn.setOverlay(self.getTextOverlay(m,numPA, True, inorout, channel2))
+					flatIn = flatIn.flatten()
 					flatIn.show()
+					
 			IJ.redirectErrorMessages(True)
 			sub_title = self.sub.getTitle()
 			sub2_title = sub2.getTitle()
@@ -2117,8 +2123,8 @@ class ParticleAnalyser(object):
 						"Inside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
 							index)] = [tp_stringIn, areaIn, randomNumberOfParticlesIn]
 					if self.show:
-						flatShow(colocMaskIn, "Inside", roi)
-						flatShow(randomColocMaskIn, "Random_Inside", randomRoiIn)
+						flatShow(colocMaskIn, "Inside", roi, len(tp_stringIn)-1)
+						flatShow(randomColocMaskIn, "Random_Inside", randomRoiIn, randomNumberOfParticlesIn)
 
 				if self.channel.pa_outside:
 					paString = (sizeMin, sizeMax, circ1, circ2)
@@ -2130,8 +2136,8 @@ class ParticleAnalyser(object):
 						"Outside_" + self.channel.channel_name + "_" + channel2.channel_name + "_" + m + "_" + str(
 							index))
 					if self.show:
-						flatShow(colocMaskOut, "Outside", roi)
-						flatShow(randomColocMaskOut, "Random_Outside", randomRoiOut)
+						flatShow(colocMaskOut, "Outside", roi, len(tp_stringOut)-1)
+						flatShow(randomColocMaskOut, "Random_Outside", randomRoiOut, randomNumberOfParticlesOut)
 			binary.close()
 			return roi
 
