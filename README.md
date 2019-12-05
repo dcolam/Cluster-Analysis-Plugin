@@ -93,7 +93,7 @@ It is recommended to open your Output.db file with a a DB-Browser such as DB-Bro
 
 Using the ShinyApp-library within the R-framework, we are currently working on a solution to allow people to analyze and plot the results given by the Cluster Analysis Plugin in form of the database without any need of scripting at all. The work is still in progress and should be soon available. 
 
-### Headless-mode
+## Headless-mode
 
 Thanks to the headless-mode functionality of ImageJ2 and the Cluster Analysis Plugin, the program is able to run in a desktop-free environment such as an external server (preinstalled with FIJI). Load a previously tested ini.cfg-file with the right parameters using following command in a bash-shell terminal (in a Linux-server):
 ```
