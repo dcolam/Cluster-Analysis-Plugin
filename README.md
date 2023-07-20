@@ -1,6 +1,8 @@
 # Cluster-Analysis-Plugin
 
 [![Build Status](https://travis-ci.org/dcolam/Cluster-Analysis-Plugin.svg?branch=master)](https://travis-ci.org/dcolam/Cluster-Analysis-Plugin)
+[![DOI](https://zenodo.org/badge/110953293.svg)](https://zenodo.org/badge/latestdoi/110953293)
+
 
 Fiji-Plugin to segment and quantify confocal images
 
