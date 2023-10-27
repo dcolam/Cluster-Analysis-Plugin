@@ -11,7 +11,7 @@ Fiji-Plugin to segment and quantify confocal images
 There are two ways how to install the Fiji-plugin:
 
 ### Recommended
-Go directly on your local Fiji-application and click on Update > Manage update sites > Add Unlisted Site and type the URL to the repository of thus plugin https://sites.imagej.net/Dcolam/. After clicking on Apply and Close, all scripts and dependencies should be installed in the right place and you only need to restart Fiji.
+Go directly on your local Fiji-application and click on Update > Manage update sites > Add Unlisted Site and type the URL to the repository of this plugin https://sites.imagej.net/Dcolam/. After clicking on Apply and Close, all scripts and dependencies should be installed in the right place and you only need to restart Fiji.
 
 ### Not Recommended (Not always up-to-date)
 Alternatively, you can can either download this whole repository as a .zip-file or save directly the Cluster_Analysis.zip-file and unzip it locally. To install the plugin from Fiji:
